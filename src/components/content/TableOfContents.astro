@@ -1,0 +1,215 @@
+---
+import { Clock3 } from "@lucide/astro";
+
+import { formatDate } from "@/utils/format-date";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  lastUpdated: Date;
+}
+
+const { headings, lastUpdated } = Astro.props;
+
+const visibleHeadings = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+---
+
+<div class="sticky top-24">
+  <div class="border-l border-[#262626] pl-7">
+    <p class="mb-3 text-[14px] font-semibold text-[#ededed]">En esta página</p>
+
+    {
+      visibleHeadings.length > 0 ? (
+        <nav aria-label="Tabla de contenidos">
+          <ul class="space-y-0.5">
+            {visibleHeadings.map((heading) => (
+              <li>
+                <a
+                  data-toc-link
+                  href={`#${heading.slug}`}
+                  class:list={[
+                    "relative block rounded-md py-2 pr-2 text-[13px] leading-5 transition-colors",
+                    heading.depth === 3
+                      ? "pl-6 text-[#737373]"
+                      : "pl-3 text-[#a1a1a1]",
+                  ]}
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ) : (
+        <p class="text-[13px] leading-5 text-[#737373]">
+          Este artículo no tiene secciones.
+        </p>
+      )
+    }
+
+    <div class="mt-7 border-t border-[#262626] pt-5">
+      <div class="flex items-start gap-2 text-[12px] leading-5 text-[#737373]">
+        <Clock3 class="mt-0.5 size-4 shrink-0" stroke-width={1.75} />
+
+        <span>
+          Última actualización: {formatDate(lastUpdated)}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const links = Array.from(document.querySelectorAll("[data-toc-link]"));
+
+    if (links.length === 0) {
+      return;
+    }
+
+    const items = links
+      .map((link) => {
+        const href = link.getAttribute("href");
+
+        if (!href) {
+          return null;
+        }
+
+        const id = decodeURIComponent(href.slice(1));
+        const heading = document.getElementById(id);
+
+        if (!heading) {
+          return null;
+        }
+
+        return {
+          link,
+          heading,
+        };
+      })
+      .filter(Boolean);
+
+    if (items.length === 0) {
+      return;
+    }
+
+    let clickedLink = null;
+    let clickTimeout = null;
+
+    const setActive = (activeLink) => {
+      links.forEach((link) => {
+        const isActive = link === activeLink;
+
+        link.dataset.active = isActive ? "true" : "false";
+
+        if (isActive) {
+          link.setAttribute("aria-current", "location");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+    };
+
+    const isNearBottom = () => {
+      const documentHeight = document.documentElement.scrollHeight;
+
+      const viewportBottom = window.scrollY + window.innerHeight;
+
+      return documentHeight - viewportBottom < 80;
+    };
+
+    const updateActiveHeading = () => {
+      if (clickedLink) {
+        return;
+      }
+
+      /*
+       * Al llegar al final del documento, la última sección
+       * nunca puede alcanzar la parte superior del viewport.
+       * En ese caso la consideramos activa explícitamente.
+       */
+      if (isNearBottom()) {
+        setActive(items[items.length - 1].link);
+        return;
+      }
+
+      const readingLine = 150;
+
+      let current = items[0];
+
+      for (const item of items) {
+        if (item.heading.getBoundingClientRect().top <= readingLine) {
+          current = item;
+        } else {
+          break;
+        }
+      }
+
+      setActive(current.link);
+    };
+
+    links.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        const href = link.getAttribute("href");
+
+        if (!href) {
+          return;
+        }
+
+        const id = decodeURIComponent(href.slice(1));
+        const target = document.getElementById(id);
+
+        if (!target) {
+          return;
+        }
+
+        clickedLink = link;
+
+        setActive(link);
+
+        history.replaceState(
+          null,
+          "",
+          `${window.location.pathname}${window.location.search}${href}`,
+        );
+
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+
+        if (clickTimeout) {
+          window.clearTimeout(clickTimeout);
+        }
+
+        /*
+         * Mientras dura el smooth-scroll mantenemos seleccionado
+         * el elemento que el usuario pulsó.
+         */
+        clickTimeout = window.setTimeout(() => {
+          clickedLink = null;
+          updateActiveHeading();
+        }, 800);
+      });
+    });
+
+    updateActiveHeading();
+
+    window.addEventListener("scroll", updateActiveHeading, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", updateActiveHeading, {
+      passive: true,
+    });
+  })();
+</script>

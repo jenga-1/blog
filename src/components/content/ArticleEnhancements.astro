@@ -1,0 +1,319 @@
+<script is:inline>
+  (() => {
+    const article = document.querySelector(".article-content");
+
+    if (!article) {
+      return;
+    }
+
+    const languageNames = {
+      js: "JavaScript",
+      javascript: "JavaScript",
+      jsx: "JSX",
+      ts: "TypeScript",
+      typescript: "TypeScript",
+      tsx: "TSX",
+      html: "HTML",
+      css: "CSS",
+      scss: "SCSS",
+      json: "JSON",
+      bash: "Bash",
+      shell: "Shell",
+      sh: "Shell",
+      powershell: "PowerShell",
+      ps1: "PowerShell",
+      astro: "Astro",
+      md: "Markdown",
+      markdown: "Markdown",
+      text: "Texto",
+      txt: "Texto",
+      sql: "SQL",
+      python: "Python",
+      py: "Python",
+      java: "Java",
+      c: "C",
+      cpp: "C++",
+      csharp: "C#",
+      cs: "C#",
+      php: "PHP",
+      yaml: "YAML",
+      yml: "YAML",
+      env: "ENV",
+      dockerfile: "Dockerfile",
+      graphql: "GraphQL",
+    };
+
+    const getLanguage = (pre, code) => {
+      const dataLanguage = pre.dataset.language || code.dataset.language;
+
+      if (dataLanguage) {
+        return dataLanguage.toLowerCase();
+      }
+
+      const languageClass = Array.from(code.classList).find((className) =>
+        className.startsWith("language-"),
+      );
+
+      if (languageClass) {
+        return languageClass.replace("language-", "").toLowerCase();
+      }
+
+      return "text";
+    };
+
+    const createCopyIcon = () => `
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+      </svg>
+    `;
+
+    const createCheckIcon = () => `
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="m20 6-11 11-5-5"></path>
+      </svg>
+    `;
+
+    const preBlocks = Array.from(article.querySelectorAll("pre"));
+
+    preBlocks.forEach((pre) => {
+      if (pre.dataset.enhanced === "true") {
+        return;
+      }
+
+      const code = pre.querySelector("code");
+
+      if (!code) {
+        return;
+      }
+
+      pre.dataset.enhanced = "true";
+
+      const language = getLanguage(pre, code);
+
+      const languageLabel = languageNames[language] ?? language.toUpperCase();
+
+      const wrapper = document.createElement("div");
+
+      wrapper.className = "article-code-block";
+
+      const header = document.createElement("div");
+
+      header.className = "article-code-header";
+
+      const languageElement = document.createElement("span");
+
+      languageElement.className = "article-code-language";
+
+      languageElement.textContent = languageLabel;
+
+      const copyButton = document.createElement("button");
+
+      copyButton.type = "button";
+
+      copyButton.className = "article-code-copy";
+
+      copyButton.setAttribute("aria-label", "Copiar código");
+
+      copyButton.innerHTML = `
+        ${createCopyIcon()}
+        <span>Copiar</span>
+      `;
+
+      header.append(languageElement, copyButton);
+
+      pre.parentNode.insertBefore(wrapper, pre);
+
+      wrapper.append(header, pre);
+
+      copyButton.addEventListener("click", async () => {
+        const value = code.textContent ?? "";
+
+        try {
+          await navigator.clipboard.writeText(value);
+
+          copyButton.dataset.copied = "true";
+
+          copyButton.innerHTML = `
+              ${createCheckIcon()}
+              <span>Copiado</span>
+            `;
+
+          window.setTimeout(() => {
+            copyButton.dataset.copied = "false";
+
+            copyButton.innerHTML = `
+                ${createCopyIcon()}
+                <span>Copiar</span>
+              `;
+          }, 1800);
+        } catch {
+          copyButton.innerHTML = "<span>No se pudo copiar</span>";
+
+          window.setTimeout(() => {
+            copyButton.innerHTML = `
+                ${createCopyIcon()}
+                <span>Copiar</span>
+              `;
+          }, 1800);
+        }
+      });
+    });
+
+    const calloutConfig = {
+      NOTE: {
+        label: "Nota",
+        icon: "i",
+      },
+      TIP: {
+        label: "Tip",
+        icon: "✓",
+      },
+      IMPORTANT: {
+        label: "Importante",
+        icon: "!",
+      },
+      WARNING: {
+        label: "Advertencia",
+        icon: "!",
+      },
+    };
+
+    const blockquotes = Array.from(article.querySelectorAll("blockquote"));
+
+    blockquotes.forEach((blockquote) => {
+      const firstParagraph = blockquote.querySelector("p");
+
+      if (!firstParagraph) {
+        return;
+      }
+
+      const text = firstParagraph.textContent?.trim() ?? "";
+
+      const match = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING)\]\s*/i);
+
+      if (!match) {
+        return;
+      }
+
+      const type = match[1].toUpperCase();
+
+      const config = calloutConfig[type];
+
+      if (!config) {
+        return;
+      }
+
+      blockquote.dataset.callout = type.toLowerCase();
+
+      const originalHtml = firstParagraph.innerHTML;
+
+      firstParagraph.innerHTML = originalHtml.replace(
+        /^\[!(NOTE|TIP|IMPORTANT|WARNING)\]\s*/i,
+        "",
+      );
+
+      const header = document.createElement("div");
+
+      header.className = "article-callout-header";
+
+      header.innerHTML = `
+        <span class="article-callout-icon" aria-hidden="true">
+          ${config.icon}
+        </span>
+
+        <span>
+          ${config.label}
+        </span>
+      `;
+
+      blockquote.insertBefore(header, firstParagraph);
+    });
+    const headings = Array.from(article.querySelectorAll("h2[id], h3[id]"));
+
+    headings.forEach((heading) => {
+      if (heading.querySelector("[data-heading-anchor]")) {
+        return;
+      }
+
+      const anchor = document.createElement("a");
+
+      anchor.href = `#${heading.id}`;
+      anchor.dataset.headingAnchor = "true";
+      anchor.className = "article-heading-anchor";
+      anchor.setAttribute(
+        "aria-label",
+        `Enlace a ${heading.textContent ?? "sección"}`,
+      );
+
+      anchor.innerHTML = `
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      `;
+
+      heading.appendChild(anchor);
+    });
+    const tables = Array.from(article.querySelectorAll("table"));
+
+    tables.forEach((table) => {
+      if (table.parentElement?.classList.contains("article-table-wrapper")) {
+        return;
+      }
+
+      const wrapper = document.createElement("div");
+
+      wrapper.className = "article-table-wrapper";
+
+      table.parentNode.insertBefore(wrapper, table);
+
+      wrapper.appendChild(table);
+    });
+
+    const externalLinks = Array.from(article.querySelectorAll("a[href]"));
+
+    externalLinks.forEach((link) => {
+      try {
+        const url = new URL(link.href, window.location.href);
+
+        if (url.origin !== window.location.origin) {
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+        }
+      } catch {
+        // Ignorar enlaces que no formen una URL válida.
+      }
+    });
+  })();
+</script>

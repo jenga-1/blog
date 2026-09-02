@@ -1,0 +1,53 @@
+---
+import { ArrowLeft, Search } from "@lucide/astro";
+
+import AppLayout from "@/layouts/AppLayout.astro";
+---
+
+<AppLayout
+  title="Página no encontrada"
+  description="La página solicitada no existe."
+  noindex={true}
+>
+  <main
+    class="flex min-h-[calc(100dvh-4rem)] items-center justify-center px-5 py-12"
+  >
+    <div class="w-full max-w-[520px] text-center">
+      <p class="font-mono text-[13px] text-[#525252]">404</p>
+
+      <h1
+        class="mt-4 text-[32px] font-semibold tracking-[-0.04em] text-[#ededed] sm:text-[38px]"
+      >
+        Página no encontrada
+      </h1>
+
+      <p
+        class="mx-auto mt-4 max-w-[430px] text-[14px] leading-6 text-[#737373]"
+      >
+        El contenido que buscas no existe, fue movido o todavía no ha sido
+        creado.
+      </p>
+
+      <div class="mt-7 flex flex-wrap justify-center gap-3">
+        <a
+          href="/"
+          class="inline-flex min-h-10 items-center gap-2 rounded-md border border-[#333333] bg-[#ededed] px-4 text-[13px] font-medium text-black transition-opacity hover:opacity-90"
+        >
+          <ArrowLeft class="size-4" stroke-width={1.75} />
+
+          Inicio
+        </a>
+
+        <button
+          data-search-trigger
+          type="button"
+          class="inline-flex min-h-10 items-center gap-2 rounded-md border border-[#262626] bg-[#0a0a0a] px-4 text-[13px] text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed]"
+        >
+          <Search class="size-4" stroke-width={1.75} />
+
+          Buscar
+        </button>
+      </div>
+    </div>
+  </main>
+</AppLayout>

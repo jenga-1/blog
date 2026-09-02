@@ -1,0 +1,133 @@
+---
+import { getCollection } from "astro:content";
+
+import { Star } from "@lucide/astro";
+
+import PostListItem from "@/components/content/PostListItem.astro";
+
+import AppLayout from "@/layouts/AppLayout.astro";
+
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+
+const sortedPosts = posts.sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+---
+
+<AppLayout title="Favoritos">
+  <main class="min-h-[calc(100vh-4rem)]">
+    <div class="mx-auto w-full max-w-[980px] px-6 py-12 sm:px-8 lg:px-12">
+      <header class="border-b border-[#262626] pb-8">
+        <p class="text-[13px] font-medium text-[#3291ff]">Biblioteca</p>
+
+        <h1
+          class="mt-3 text-[36px] font-semibold tracking-[-0.04em] text-[#ededed] sm:text-[42px]"
+        >
+          Favoritos
+        </h1>
+
+        <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-[#a1a1a1]">
+          Artículos que has guardado para encontrarlos rápidamente.
+        </p>
+
+        <p data-favorites-count class="mt-5 text-[12px] text-[#525252]">
+          0 artículos
+        </p>
+      </header>
+
+      <section data-favorites-list>
+        {
+          sortedPosts.map((post) => (
+            <div data-favorite-post data-post-id={post.id} class="hidden">
+              <PostListItem post={post} />
+            </div>
+          ))
+        }
+      </section>
+
+      <div
+        data-favorites-empty
+        class="flex min-h-[320px] flex-col items-center justify-center text-center"
+      >
+        <div
+          class="flex size-11 items-center justify-center rounded-full border border-[#262626] bg-[#0a0a0a] text-[#737373]"
+        >
+          <Star class="size-5" stroke-width={1.75} />
+        </div>
+
+        <p class="mt-4 text-[14px] font-medium text-[#ededed]">
+          Aún no tienes favoritos.
+        </p>
+
+        <p class="mt-1 max-w-sm text-[13px] leading-6 text-[#737373]">
+          Pulsa la estrella de cualquier artículo para guardarlo aquí.
+        </p>
+      </div>
+    </div>
+  </main>
+</AppLayout>
+
+<script is:inline>
+  (() => {
+    const STORAGE_KEY = "aprendo:favorites";
+
+    const postElements = Array.from(
+      document.querySelectorAll("[data-favorite-post]"),
+    );
+
+    const emptyState = document.querySelector("[data-favorites-empty]");
+
+    const count = document.querySelector("[data-favorites-count]");
+
+    const getFavorites = () => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+
+        if (!raw) {
+          return [];
+        }
+
+        const value = JSON.parse(raw);
+
+        return Array.isArray(value) ? value : [];
+      } catch {
+        return [];
+      }
+    };
+
+    const render = () => {
+      const favorites = getFavorites();
+
+      let visibleCount = 0;
+
+      postElements.forEach((element) => {
+        const postId = element.dataset.postId;
+
+        const active = Boolean(postId) && favorites.includes(postId);
+
+        element.classList.toggle("hidden", !active);
+
+        if (active) {
+          visibleCount += 1;
+        }
+      });
+
+      emptyState?.classList.toggle("hidden", visibleCount > 0);
+
+      if (count) {
+        count.textContent =
+          visibleCount === 1 ? "1 artículo" : `${visibleCount} artículos`;
+      }
+    };
+
+    render();
+
+    window.addEventListener("aprendo:favorites-changed", render);
+
+    window.addEventListener("storage", (event) => {
+      if (event.key === STORAGE_KEY) {
+        render();
+      }
+    });
+  })();
+</script>

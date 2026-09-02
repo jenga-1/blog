@@ -1,0 +1,65 @@
+import {
+  BookOpen,
+  Box,
+  Brain,
+  Camera,
+  ChevronRight,
+  CircleUserRound,
+  Cloud,
+  Code2,
+  CookingPot,
+  Database,
+  Folder,
+  Gamepad2,
+  Globe2,
+  Lightbulb,
+  LockKeyhole,
+  Music2,
+  Network,
+  Palette,
+  Server,
+  Settings,
+  ShieldCheck,
+  Smartphone,
+  Star,
+  Terminal,
+  Wrench,
+} from "@lucide/astro";
+
+/** Icons that can be selected from a category definition. */
+export const categoryIcons = {
+  code: Code2,
+  architecture: Box,
+  security: ShieldCheck,
+  lock: LockKeyhole,
+  astro: ChevronRight,
+  nextjs: CircleUserRound,
+  cooking: CookingPot,
+  dance: Music2,
+  idea: Lightbulb,
+  design: Palette,
+  database: Database,
+  terminal: Terminal,
+  book: BookOpen,
+  network: Network,
+  cloud: Cloud,
+  mobile: Smartphone,
+  gamepad: Gamepad2,
+  music: Music2,
+  camera: Camera,
+  wrench: Wrench,
+  brain: Brain,
+  globe: Globe2,
+  folder: Folder,
+  server: Server,
+  palette: Palette,
+} as const;
+
+export const sidebarIcons = {
+  ...categoryIcons,
+  star: Star,
+  settings: Settings,
+} as const;
+
+export type CategoryIcon = keyof typeof categoryIcons;
+export type SidebarIconName = keyof typeof sidebarIcons;

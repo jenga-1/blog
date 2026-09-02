@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+
+import { ChevronRight } from "@lucide/astro";
+
+import {
+  getCategoryNavigation,
+  libraryNavigation,
+  utilityNavigation,
+} from "@/config/navigation";
+
+const pathname = Astro.url.pathname;
+
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+
+const activePost = posts.find((post) => `/${post.id}` === pathname);
+
+const activeCategory = activePost
+  ? getCategoryNavigation(activePost.data.category)
+  : undefined;
+
+const standaloneCategory = libraryNavigation.find(
+  (item) => item.href === pathname,
+);
+
+const utilityItem = utilityNavigation.find((item) => item.href === pathname);
+
+const firstLabel =
+  activeCategory?.label ??
+  standaloneCategory?.label ??
+  utilityItem?.label ??
+  "Inicio";
+
+const firstHref =
+  activeCategory?.href ?? standaloneCategory?.href ?? utilityItem?.href ?? "/";
+
+const secondLabel = activePost?.data.sidebarLabel ?? activePost?.data.title;
+---
+
+<nav
+  aria-label="Breadcrumb"
+  class="flex min-w-0 items-center gap-2 text-[13px] sm:text-[14px]"
+>
+  <a
+    href={firstHref}
+    class:list={[
+      "truncate text-[#a1a1a1] transition-colors hover:text-[#ededed]",
+      secondLabel ? "hidden sm:block" : "block",
+    ]}
+  >
+    {firstLabel}
+  </a>
+
+  {
+    secondLabel && (
+      <>
+        <ChevronRight
+          class="hidden size-4 shrink-0 text-[#525252] sm:block"
+          stroke-width={1.75}
+        />
+
+        <span class="truncate text-[#ededed]" aria-current="page">
+          {secondLabel}
+        </span>
+      </>
+    )
+  }
+</nav>

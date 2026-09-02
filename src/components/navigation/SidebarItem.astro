@@ -1,0 +1,58 @@
+---
+import { ChevronRight } from "@lucide/astro";
+
+import SidebarIcon from "@/components/navigation/SidebarIcon.astro";
+
+import type { NavigationItem } from "@/config/navigation";
+
+interface Props {
+  item: NavigationItem;
+  pathname: string;
+  showChevron?: boolean;
+}
+
+const { item, pathname, showChevron = true } = Astro.props;
+
+const isActive =
+  item.href === "/"
+    ? pathname === "/"
+    : Boolean(
+        item.href &&
+        (pathname === item.href || pathname.startsWith(`${item.href}/`)),
+      );
+---
+
+<a
+  href={item.href}
+  aria-current={isActive ? "page" : undefined}
+  title={item.label}
+  class:list={[
+    "group flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-[14px] transition-colors duration-150",
+    isActive
+      ? "bg-[#1d1d1f] text-white"
+      : "text-[#ededed] hover:bg-[#111111] hover:text-white",
+  ]}
+>
+  <span
+    class:list={[
+      "flex size-5 shrink-0 items-center justify-center transition-colors",
+      isActive ? "text-white" : "text-[#a1a1a1] group-hover:text-white",
+    ]}
+  >
+    <SidebarIcon name={item.icon} />
+  </span>
+
+  <span data-sidebar-item-label class="min-w-0 flex-1 truncate">
+    {item.label}
+  </span>
+
+  {
+    showChevron && (
+      <ChevronRight
+        data-sidebar-item-chevron
+        class="size-4 shrink-0 text-[#737373] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[#a1a1a1]"
+        stroke-width={1.75}
+      />
+    )
+  }
+</a>

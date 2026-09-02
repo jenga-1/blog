@@ -1,0 +1,113 @@
+---
+import { Star } from "@lucide/astro";
+
+interface Props {
+  postId: string;
+}
+
+const { postId } = Astro.props;
+---
+
+<button
+  type="button"
+  data-favorite-button
+  data-post-id={postId}
+  aria-label="Añadir a favoritos"
+  aria-pressed="false"
+  class="flex size-10 shrink-0 items-center justify-center rounded-md border border-[#262626] bg-black text-[#737373] transition-colors hover:bg-[#111111] hover:text-[#ededed]"
+>
+  <Star data-favorite-icon class="size-[17px]" stroke-width={1.75} />
+</button>
+
+<script is:inline>
+  (() => {
+    const STORAGE_KEY = "aprendo:favorites";
+
+    const getFavorites = () => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+
+        if (!raw) {
+          return [];
+        }
+
+        const value = JSON.parse(raw);
+
+        return Array.isArray(value) ? value : [];
+      } catch {
+        return [];
+      }
+    };
+
+    const saveFavorites = (favorites) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+
+      window.dispatchEvent(
+        new CustomEvent("aprendo:favorites-changed", {
+          detail: {
+            favorites,
+          },
+        }),
+      );
+    };
+
+    const updateButton = (button, favorites) => {
+      const postId = button.dataset.postId;
+
+      if (!postId) {
+        return;
+      }
+
+      const active = favorites.includes(postId);
+
+      button.dataset.favorite = active ? "true" : "false";
+
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+
+      button.setAttribute(
+        "aria-label",
+        active ? "Quitar de favoritos" : "Añadir a favoritos",
+      );
+    };
+
+    const buttons = Array.from(
+      document.querySelectorAll("[data-favorite-button]"),
+    );
+
+    let favorites = getFavorites();
+
+    buttons.forEach((button) => {
+      updateButton(button, favorites);
+
+      button.addEventListener("click", () => {
+        const postId = button.dataset.postId;
+
+        if (!postId) {
+          return;
+        }
+
+        favorites = getFavorites();
+
+        if (favorites.includes(postId)) {
+          favorites = favorites.filter((id) => id !== postId);
+        } else {
+          favorites = [...favorites, postId];
+        }
+
+        saveFavorites(favorites);
+
+        buttons.forEach((item) => {
+          updateButton(item, favorites);
+        });
+      });
+    });
+
+    window.addEventListener("aprendo:favorites-changed", (event) => {
+      favorites = event.detail?.favorites ?? getFavorites();
+
+      buttons.forEach((button) => {
+        updateButton(button, favorites);
+      });
+    });
+  })();
+</script>

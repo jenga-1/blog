@@ -1,0 +1,16 @@
+---
+import { sidebarIcons } from "@/config/icons";
+
+import type { SidebarIconName } from "@/config/icons";
+
+interface Props {
+  name: SidebarIconName;
+  class?: string;
+}
+
+const { name, class: className = "size-[18px]" } = Astro.props;
+
+const Icon = sidebarIcons[name];
+---
+
+<Icon class={className} stroke-width={1.75} />

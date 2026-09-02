@@ -1,0 +1,59 @@
+---
+import { ChevronDown, List } from "@lucide/astro";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+
+const visibleHeadings = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+---
+
+{
+  visibleHeadings.length > 0 && (
+    <details class="group rounded-lg border border-[#262626] bg-[#050505] xl:hidden">
+      <summary class="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 text-[13px] font-medium text-[#ededed] [&::-webkit-details-marker]:hidden">
+        <List class="size-4 shrink-0 text-[#737373]" stroke-width={1.75} />
+
+        <span class="flex-1">En esta página</span>
+
+        <ChevronDown
+          class="size-4 shrink-0 text-[#737373] transition-transform duration-200 group-open:rotate-180"
+          stroke-width={1.75}
+        />
+      </summary>
+
+      <nav
+        aria-label="Tabla de contenidos móvil"
+        class="border-t border-[#262626] px-2 py-2"
+      >
+        <ul class="space-y-0.5">
+          {visibleHeadings.map((heading) => (
+            <li>
+              <a
+                href={`#${heading.slug}`}
+                class:list={[
+                  "block rounded-md px-3 py-2.5 text-[13px] leading-5 transition-colors hover:bg-[#111111] hover:text-[#ededed]",
+                  heading.depth === 3
+                    ? "pl-7 text-[#737373]"
+                    : "text-[#a1a1a1]",
+                ]}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  )
+}

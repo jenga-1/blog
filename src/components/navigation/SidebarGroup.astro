@@ -1,0 +1,102 @@
+---
+import { ChevronDown } from "@lucide/astro";
+
+import SidebarIcon from "@/components/navigation/SidebarIcon.astro";
+
+import type { NavigationItem } from "@/config/navigation";
+
+interface Props {
+  item: NavigationItem;
+  pathname: string;
+}
+
+const { item, pathname } = Astro.props;
+
+const children = item.children ?? [];
+
+const containsActiveChild = children.some((child) => pathname === child.href);
+
+const isActiveCategory = pathname === item.href;
+
+const childrenId = `sidebar-category-${item.category ?? item.label}`;
+---
+
+<div
+  data-sidebar-group
+  class:list={[
+    "group flex min-h-10 items-center rounded-md text-[14px] text-[#ededed] transition-colors duration-150 hover:bg-[#111111] hover:text-white",
+    isActiveCategory && "bg-[#1d1d1f] text-white",
+  ]}
+>
+  <a
+    href={item.href}
+    aria-current={isActiveCategory ? "page" : undefined}
+    title={item.label}
+    class="flex min-w-0 flex-1 items-center gap-3 px-3 py-2"
+  >
+    <span
+      class:list={[
+        "flex size-5 shrink-0 items-center justify-center transition-colors group-hover:text-white",
+        isActiveCategory ? "text-white" : "text-[#a1a1a1]",
+      ]}
+    >
+      <SidebarIcon name={item.icon} />
+    </span>
+
+    <span data-sidebar-item-label class="min-w-0 flex-1 truncate">
+      {item.label}
+    </span>
+  </a>
+
+  <button
+    data-sidebar-group-toggle
+    data-sidebar-group-label={item.label}
+    type="button"
+    aria-label={`${containsActiveChild ? "Contraer" : "Expandir"} ${item.label}`}
+    aria-expanded={containsActiveChild ? "true" : "false"}
+    aria-controls={childrenId}
+    class="flex size-10 shrink-0 items-center justify-center rounded-md text-[#737373] transition-colors hover:text-[#ededed]"
+  >
+    <ChevronDown
+      data-sidebar-group-chevron
+      data-sidebar-item-chevron
+      class:list={[
+        "size-4 shrink-0 transition-transform duration-200",
+        containsActiveChild && "rotate-180",
+      ]}
+      stroke-width={1.75}
+    />
+  </button>
+</div>
+
+<div
+  id={childrenId}
+  data-sidebar-children
+  hidden={!containsActiveChild}
+  class="relative ml-[21px] mt-0.5 space-y-0.5 pb-1 pl-[18px] before:absolute before:inset-y-1 before:left-0 before:w-px before:bg-[#262626]"
+>
+  {
+    children.map((child) => {
+      const isActive = pathname === child.href;
+
+      return (
+        <a
+          href={child.href}
+          aria-current={isActive ? "page" : undefined}
+          class:list={[
+            "relative flex min-h-9 items-center rounded-md px-3 text-[14px] transition-colors duration-150",
+            isActive
+              ? "bg-[#1d1d1f] text-white"
+              : "text-[#a1a1a1] hover:bg-[#111111] hover:text-[#ededed]",
+          ]}
+        >
+          {isActive && (
+            <span class="absolute left-[-21px] top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[#0070f3]" />
+          )}
+
+          <span class="truncate">{child.label}</span>
+        </a>
+      );
+    })
+  }
+</div>

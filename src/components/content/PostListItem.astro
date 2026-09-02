@@ -1,0 +1,75 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+import { ArrowUpRight } from "@lucide/astro";
+
+import { getCategoryConfig } from "@/config/categories";
+
+import { formatDate } from "@/utils/format-date";
+import { getReadingTime } from "@/utils/reading-time";
+
+interface Props {
+  post: CollectionEntry<"posts">;
+}
+
+const { post } = Astro.props;
+
+const category = getCategoryConfig(post.data.category);
+
+const readingTime = getReadingTime(post.body ?? "");
+---
+
+<article
+  data-post-list-item
+  data-post-id={post.id}
+  class="group border-b border-[#262626] py-7 mt-8 first:pt-0"
+>
+  <a href={`/${post.id}`} class="block">
+    <div class="flex items-start justify-between gap-6">
+      <div class="min-w-0 flex-1">
+        <div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span class="text-[12px] font-medium text-[#3291ff]">
+            {category.label}
+          </span>
+
+          <span class="text-[12px] text-[#525252]">
+            {formatDate(post.data.publishedAt)}
+          </span>
+
+          <span class="text-[12px] text-[#525252]">
+            {readingTime} min
+          </span>
+
+        </div>
+
+        <h2
+          class="text-[18px] font-semibold leading-7 tracking-[-0.02em] text-[#ededed] transition-colors group-hover:text-white sm:text-[20px]"
+        >
+          {post.data.title}
+        </h2>
+
+        <p class="mt-2 max-w-[680px] text-[14px] leading-6 text-[#a1a1a1]">
+          {post.data.description}
+        </p>
+
+        {
+          post.data.tags.length > 0 && (
+            <div class="mt-4 flex flex-wrap gap-2">
+              {post.data.tags.slice(0, 5).map((tag) => (
+                <span class="rounded-md border border-[#262626] bg-[#0a0a0a] px-2 py-1 text-[11px] leading-none text-[#737373]">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )
+        }
+
+      </div>
+
+      <ArrowUpRight
+        class="mt-1 size-[18px] shrink-0 text-[#525252] transition-all duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#a1a1a1]"
+        stroke-width={1.75}
+      />
+    </div>
+  </a>
+</article>

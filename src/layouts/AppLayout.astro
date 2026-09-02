@@ -1,0 +1,108 @@
+---
+import "../styles/global.css";
+
+import AppShellController from "@/components/layout/AppShellController.astro";
+import Navbar from "@/components/navigation/Navbar.astro";
+import SearchDialog from "@/components/navigation/SearchDialog.astro";
+import Sidebar from "@/components/navigation/Sidebar.astro";
+
+import { siteConfig } from "@/config/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+  ogType?: "website" | "article";
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = siteConfig.description,
+  image = siteConfig.defaultOgImage,
+  canonical,
+  ogType = "website",
+  noindex = false,
+} = Astro.props;
+
+const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.name;
+
+const canonicalUrl = new URL(
+  canonical ?? Astro.url.pathname,
+  Astro.site ?? siteConfig.url,
+);
+
+const imageUrl = new URL(image, Astro.site ?? siteConfig.url);
+---
+
+<!doctype html>
+<html lang={siteConfig.language} style="--sidebar-offset: 272px;">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="description" content={description} />
+
+    <meta name="generator" content={Astro.generator} />
+
+    <meta name="theme-color" content="#000000" />
+
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <link rel="canonical" href={canonicalUrl} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${siteConfig.name} RSS`}
+      href="/rss.xml"
+    />
+
+    <meta property="og:type" content={ogType} />
+
+    <meta property="og:site_name" content={siteConfig.name} />
+
+    <meta property="og:title" content={pageTitle} />
+
+    <meta property="og:description" content={description} />
+
+    <meta property="og:url" content={canonicalUrl} />
+
+    <meta property="og:image" content={imageUrl} />
+
+    <meta property="og:locale" content={siteConfig.locale} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="twitter:title" content={pageTitle} />
+
+    <meta name="twitter:description" content={description} />
+
+    <meta name="twitter:image" content={imageUrl} />
+
+    <title>{pageTitle}</title>
+
+    <slot name="head" />
+  </head>
+
+  <body>
+    <Sidebar />
+
+    <Navbar />
+
+    <div
+      data-app-content
+      class="min-h-screen bg-black pt-16 transition-[padding] duration-200 lg:pl-[var(--sidebar-offset)]"
+    >
+      <slot />
+    </div>
+
+    <SearchDialog />
+
+    <AppShellController />
+  </body>
+</html>

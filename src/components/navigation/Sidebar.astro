@@ -1,0 +1,170 @@
+---
+import { getCollection } from "astro:content";
+import { ChevronLeft, Moon, X } from "@lucide/astro";
+
+import SidebarGroup from "@/components/navigation/SidebarGroup.astro";
+import SidebarItem from "@/components/navigation/SidebarItem.astro";
+import BrandMark from "@/components/ui/BrandMark.astro";
+
+import { libraryNavigation, utilityNavigation } from "@/config/navigation";
+import { siteConfig } from "@/config/site";
+
+const pathname = Astro.url.pathname;
+
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+
+const generatedNavigation = libraryNavigation.map((item) => {
+  if (!item.category) {
+    return item;
+  }
+
+  const postChildren = posts
+    .filter((post) => post.data.category === item.category)
+    .sort((a, b) => {
+      if (a.data.order !== b.data.order) {
+        return a.data.order - b.data.order;
+      }
+
+      return a.data.title.localeCompare(b.data.title, "es");
+    })
+    .map((post) => ({
+      label: post.data.sidebarLabel ?? post.data.title,
+      href: `/${post.id}`,
+    }));
+
+  if (postChildren.length === 0) {
+    return item;
+  }
+
+  return {
+    ...item,
+    children: postChildren,
+  };
+});
+---
+
+<div
+  data-sidebar-overlay
+  class="pointer-events-none fixed inset-0 z-40 bg-black/70 opacity-0 backdrop-blur-sm lg:hidden"
+>
+</div>
+
+<aside
+  data-sidebar
+  class="fixed inset-y-0 left-0 z-50 flex w-[min(272px,calc(100vw-40px))] -translate-x-full flex-col border-r border-[#262626] bg-black transition-transform duration-200 ease-out lg:w-[272px] lg:translate-x-0"
+>
+  <div class="flex h-16 shrink-0 items-center border-b border-[#262626] px-5">
+    <a
+      href="/"
+      aria-label={`${siteConfig.name} - Inicio`}
+      class="flex min-w-0 items-center gap-2.5 text-[#ededed]"
+    >
+      <BrandMark />
+
+      <span
+        data-sidebar-label
+        class="truncate text-[19px] font-semibold tracking-[-0.025em]"
+      >
+        {siteConfig.name}
+      </span>
+    </a>
+
+    <button
+      data-desktop-sidebar-toggle
+      type="button"
+      aria-label="Contraer navegación"
+      class="ml-auto hidden size-8 items-center justify-center rounded-md text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed] lg:flex"
+    >
+      <ChevronLeft
+        data-collapse-icon
+        class="size-[18px] transition-transform duration-200"
+        stroke-width={1.75}
+      />
+    </button>
+
+    <button
+      data-mobile-sidebar-close
+      type="button"
+      aria-label="Cerrar navegación"
+      class="ml-auto flex size-8 items-center justify-center rounded-md text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed] lg:hidden"
+    >
+      <X class="size-[18px]" stroke-width={1.75} />
+    </button>
+  </div>
+
+  <div
+    data-sidebar-scroll
+    class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-5"
+  >
+    <nav aria-label="Navegación principal">
+      <p
+        data-sidebar-section-label
+        class="mb-2 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-[#737373]"
+      >
+        Biblioteca
+      </p>
+
+      <div class="space-y-0.5">
+        {
+          generatedNavigation.map((item) =>
+            item.children && item.children.length > 0 ? (
+              <SidebarGroup item={item} pathname={pathname} />
+            ) : (
+              <SidebarItem item={item} pathname={pathname} />
+            ),
+          )
+        }
+      </div>
+    </nav>
+
+    <div class="my-5 h-px bg-[#262626]"></div>
+
+    <nav aria-label="Utilidades">
+      <p
+        data-sidebar-section-label
+        class="mb-2 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-[#737373]"
+      >
+        Utilidades
+      </p>
+
+      <div class="space-y-0.5">
+        {
+          utilityNavigation.map((item) => (
+            <SidebarItem item={item} pathname={pathname} showChevron={false} />
+          ))
+        }
+      </div>
+    </nav>
+  </div>
+
+  <div data-sidebar-profile class="shrink-0 border-t border-[#262626] p-4">
+    <div class="flex items-center gap-3 rounded-lg px-2 py-2">
+      <div
+        class="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#333333] bg-[#111111] text-sm font-medium text-[#ededed]"
+      >
+        JG
+      </div>
+
+      <div data-sidebar-profile-copy class="min-w-0 flex-1">
+        <p class="truncate text-[13px] font-medium leading-5 text-[#ededed]">
+          {siteConfig.author.name}
+        </p>
+
+        <div class="flex items-center gap-1.5">
+          <span class="size-1.5 rounded-full bg-[#22c55e]"></span>
+
+          <span class="truncate text-[12px] leading-4 text-[#737373]">
+            Personal
+          </span>
+        </div>
+      </div>
+
+      <div
+        data-sidebar-profile-icon
+        class="flex size-8 shrink-0 items-center justify-center rounded-md text-[#a1a1a1]"
+      >
+        <Moon class="size-[18px]" stroke-width={1.75} />
+      </div>
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,144 @@
+---
+import { getCollection } from "astro:content";
+
+import { ArrowRight, FileText, Search, X } from "@lucide/astro";
+
+import { getCategoryConfig } from "@/config/categories";
+
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+
+const searchItems = posts.map((post) => ({
+  title: post.data.title,
+  description: post.data.description,
+  category: post.data.category,
+  categoryLabel: getCategoryConfig(post.data.category).label,
+  tags: post.data.tags,
+  href: `/${post.id}`,
+}));
+
+const searchIndex = JSON.stringify(searchItems);
+---
+
+<div
+  data-search-dialog
+  class="pointer-events-none fixed inset-0 z-[70] hidden items-start justify-center bg-black/70 px-3 pt-3 opacity-0 backdrop-blur-sm sm:px-4 sm:pt-[10vh]"
+>
+  <div
+    data-search-panel
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="search-dialog-title"
+    class="flex max-h-[calc(100dvh-24px)] w-full max-w-[640px] flex-col overflow-hidden rounded-xl border border-[#333333] bg-[#0a0a0a] shadow-2xl sm:max-h-[80vh]"
+  >
+    <div class="flex h-14 items-center gap-3 border-b border-[#262626] px-4">
+      <Search class="size-[18px] shrink-0 text-[#737373]" stroke-width={1.75} />
+
+      <label id="search-dialog-title" for="global-search-input" class="sr-only">
+        Buscar contenido
+      </label>
+
+      <input
+        id="global-search-input"
+        data-search-input
+        type="search"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Buscar artículos..."
+        class="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-[#ededed] outline-none placeholder:text-[#525252]"
+      />
+
+      <button
+        data-search-close
+        type="button"
+        aria-label="Cerrar búsqueda"
+        class="flex size-8 shrink-0 items-center justify-center rounded-md text-[#737373] transition-colors hover:bg-[#1a1a1a] hover:text-[#ededed]"
+      >
+        <X class="size-4" stroke-width={1.75} />
+      </button>
+    </div>
+
+    <div data-search-body class="max-h-[min(520px,65vh)] overflow-y-auto">
+      <div data-search-empty class="px-6 py-12 text-center">
+        <div
+          class="mx-auto flex size-10 items-center justify-center rounded-full border border-[#262626] bg-black text-[#737373]"
+        >
+          <Search class="size-[18px]" stroke-width={1.75} />
+        </div>
+
+        <p class="mt-4 text-[14px] text-[#a1a1a1]">Busca en tu biblioteca</p>
+
+        <p class="mt-1 text-[12px] text-[#525252]">
+          Puedes buscar por título, categoría o etiqueta.
+        </p>
+      </div>
+
+      <div data-search-no-results class="hidden px-6 py-12 text-center">
+        <div
+          class="mx-auto flex size-10 items-center justify-center rounded-full border border-[#262626] bg-black text-[#737373]"
+        >
+          <FileText class="size-[18px]" stroke-width={1.75} />
+        </div>
+
+        <p class="mt-4 text-[14px] text-[#a1a1a1]">No encontramos resultados</p>
+
+        <p class="mt-1 text-[12px] text-[#525252]">
+          Prueba con otros términos.
+        </p>
+      </div>
+
+      <div data-search-results-wrapper class="hidden">
+        <div class="border-b border-[#262626] px-4 py-2.5">
+          <p
+            data-search-results-count
+            class="text-[11px] font-medium uppercase tracking-[0.04em] text-[#525252]"
+          >
+          </p>
+        </div>
+
+        <div data-search-results class="p-2"></div>
+      </div>
+    </div>
+
+    <div
+      class="flex min-h-10 items-center justify-between border-t border-[#262626] px-4 text-[11px] text-[#525252]"
+    >
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5">
+          <kbd class="rounded border border-[#262626] bg-black px-1.5 py-0.5">
+            ↑
+          </kbd>
+
+          <kbd class="rounded border border-[#262626] bg-black px-1.5 py-0.5">
+            ↓
+          </kbd>
+
+          navegar
+        </span>
+
+        <span class="hidden items-center gap-1.5 sm:flex">
+          <kbd class="rounded border border-[#262626] bg-black px-1.5 py-0.5">
+            ↵
+          </kbd>
+
+          abrir
+        </span>
+      </div>
+
+      <span class="flex items-center gap-1.5">
+        <kbd class="rounded border border-[#262626] bg-black px-1.5 py-0.5">
+          ESC
+        </kbd>
+
+        cerrar
+      </span>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ searchIndex }}>
+  (() => {
+    const items = JSON.parse(searchIndex);
+
+    window.__APRendoSearchItems = items;
+  })();
+</script>

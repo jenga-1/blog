@@ -1,20 +1,43 @@
-import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
-import { z } from 'astro/zod';
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
-const blog = defineCollection({
-	// Load Markdown and MDX files in the `src/content/blog/` directory.
-	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
-	// Type-check frontmatter using a schema
-	schema: ({ image }) =>
-		z.object({
-			title: z.string(),
-			description: z.string(),
-			// Transform string to Date object
-			pubDate: z.coerce.date(),
-			updatedDate: z.coerce.date().optional(),
-			heroImage: z.optional(image()),
-		}),
+import { categoryKeys } from "./config/categories";
+
+const posts = defineCollection({
+  loader: glob({
+    pattern: "**/*.md",
+    base: "./src/content/posts",
+
+    generateId: ({ entry }) => entry.replace(/\.md$/, "").toLowerCase(),
+  }),
+
+  schema: z.object({
+    title: z.string().trim().min(1, "El título no puede estar vacío."),
+
+    description: z
+      .string()
+      .trim()
+      .min(1, "La descripción no puede estar vacía."),
+
+    publishedAt: z.coerce.date(),
+
+    updatedAt: z.coerce.date().optional(),
+
+    category: z.enum(categoryKeys),
+
+    tags: z.array(z.string().trim().min(1)).default([]),
+
+    draft: z.boolean().default(false),
+
+    sidebarLabel: z.string().trim().min(1).optional(),
+
+    order: z.number().int().nonnegative().default(0),
+
+    image: z.string().optional(),
+  }),
 });
 
-export const collections = { blog };
+export const collections = {
+  posts,
+};

@@ -1,0 +1,80 @@
+---
+import { Menu, Search, Sun } from "@lucide/astro";
+
+import Breadcrumbs from "@/components/navigation/Breadcrumbs.astro";
+import BrandMark from "@/components/ui/BrandMark.astro";
+---
+
+<header
+  data-app-navbar
+  class="fixed inset-x-0 top-0 z-30 h-16 border-b border-[#262626] bg-black/95 backdrop-blur-md lg:left-[var(--sidebar-offset)]"
+>
+  <div class="flex h-full items-center gap-2 px-3 sm:gap-4 sm:px-6">
+    <div class="flex shrink-0 items-center gap-1.5 lg:hidden">
+      <button
+        data-mobile-sidebar-open
+        type="button"
+        aria-label="Abrir navegación"
+        class="flex size-10 items-center justify-center rounded-md text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed]"
+      >
+        <Menu class="size-5" stroke-width={1.75} />
+      </button>
+
+      <a
+        href="/"
+        aria-label="Aprendo - Inicio"
+        class="hidden items-center text-[#ededed] sm:flex"
+      >
+        <BrandMark />
+      </a>
+    </div>
+
+    <div class="min-w-0 flex-1">
+      <Breadcrumbs />
+    </div>
+
+    <button
+      data-search-trigger
+      type="button"
+      aria-label="Buscar contenido"
+      class="hidden h-9 w-[240px] items-center gap-2 rounded-md border border-[#262626] bg-black px-3 text-left text-[13px] text-[#737373] transition-colors hover:border-[#333333] hover:text-[#a1a1a1] md:flex xl:w-[280px]"
+    >
+      <Search class="size-4 shrink-0" stroke-width={1.75} />
+
+      <span class="flex-1 truncate"> Buscar </span>
+
+      <kbd
+        class="flex h-5 items-center gap-1 rounded border border-[#262626] bg-[#0a0a0a] px-1.5 font-sans text-[11px] text-[#737373]"
+      >
+        <span>⌘</span>
+        <span>K</span>
+      </kbd>
+    </button>
+
+    <button
+      data-search-trigger
+      type="button"
+      aria-label="Buscar contenido"
+      class="flex size-10 shrink-0 items-center justify-center rounded-md text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed] md:hidden"
+    >
+      <Search class="size-[18px]" stroke-width={1.75} />
+    </button>
+
+    <div class="hidden h-5 w-px bg-[#262626] md:block"></div>
+
+    <div
+      class="hidden size-9 shrink-0 items-center justify-center rounded-md text-[#a1a1a1] md:flex"
+      title="Aprendo utiliza siempre la misma apariencia oscura"
+    >
+      <Sun class="size-[18px]" stroke-width={1.75} />
+    </div>
+
+    <div class="hidden h-5 w-px bg-[#262626] sm:block"></div>
+
+    <div
+      class="hidden size-8 shrink-0 items-center justify-center rounded-full border border-[#333333] bg-[#111111] text-[11px] font-medium text-[#ededed] sm:flex"
+    >
+      JG
+    </div>
+  </div>
+</header>
