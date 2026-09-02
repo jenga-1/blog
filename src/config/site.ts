@@ -3,7 +3,7 @@ export const siteConfig = {
   description:
     "Mi biblioteca personal de programación, arquitectura, seguridad, cocina y todo aquello que voy aprendiendo.",
 
-  url: "https://midominio.com",
+  url: "https://blog-neon-eight-59.vercel.app/",
 
   locale: "es_PE",
   language: "es",
