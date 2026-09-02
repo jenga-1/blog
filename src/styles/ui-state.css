@@ -1,0 +1,65 @@
+/* ==========================================================================
+   App shell
+   ========================================================================== */
+
+[data-sidebar-overlay] {
+  transition:
+    opacity 200ms ease,
+    visibility 200ms ease;
+}
+
+[data-sidebar] {
+  transition:
+    width 200ms ease,
+    transform 200ms ease;
+}
+
+[data-search-dialog] {
+  transition: opacity 150ms ease;
+}
+
+/* ==========================================================================
+   Table of contents
+   ========================================================================== */
+
+[data-toc-link][data-active="true"] {
+  background: var(--surface-soft);
+  color: var(--accent-hover);
+}
+
+[data-toc-link][data-active="true"]::before {
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: -1.78rem;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--accent);
+  content: "";
+}
+
+/* ==========================================================================
+   Search
+   ========================================================================== */
+
+[data-search-result][data-active="true"] {
+  background: var(--surface-hover);
+}
+
+[data-search-result]:hover {
+  background: var(--surface-soft);
+}
+
+/* ==========================================================================
+   Favorites
+   ========================================================================== */
+
+[data-favorite-button][data-favorite="true"] {
+  border-color: var(--border-hover);
+  background: var(--surface-soft);
+  color: var(--foreground);
+}
+
+[data-favorite-button][data-favorite="true"] [data-favorite-icon] {
+  fill: currentColor;
+}
