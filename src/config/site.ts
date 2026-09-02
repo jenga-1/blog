@@ -13,7 +13,7 @@ export const siteConfig = {
   },
 
   social: {
-    github: "",
+    github: "https://github.com/jenga-1",
   },
 
   defaultOgImage: "/images/og/default.png",
