@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 
-import { ChevronRight } from "@lucide/astro";
+import { ArrowRight, ChevronRight } from "@lucide/astro";
 
 import PostListItem from "@/components/content/PostListItem.astro";
 
@@ -35,16 +35,16 @@ const categories = libraryNavigation.map((category) => {
       class="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-12 px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12 xl:grid-cols-[minmax(0,760px)_240px] xl:gap-14 xl:px-12"
     >
       <div class="min-w-0">
-        <header class="border-b border-[#262626] pb-8">
-          <p class="text-[13px] font-medium text-[#3291ff]">Aprendo</p>
+        <header class="border-b border-border pb-8">
+          <p class="text-[13px] font-medium text-accent">Biblioteca</p>
 
           <h1
-            class="mt-3 text-[32px] sm:text-[38px] lg:text-[42px] font-semibold leading-[1.1] tracking-[-0.04em] text-[#ededed] sm:text-[42px]"
+            class="mt-3 text-[32px] font-semibold leading-[1.1] tracking-[-0.04em] text-foreground sm:text-[38px] lg:text-[42px]"
           >
             Últimos artículos
           </h1>
 
-          <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-[#a1a1a1]">
+          <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-muted">
             Todo lo que voy aprendiendo y quiero conservar para consultarlo más
             adelante.
           </p>
@@ -53,25 +53,40 @@ const categories = libraryNavigation.map((category) => {
         <section class="pt-8">
           {
             recentPosts.length > 0 ? (
-              recentPosts.map((post) => <PostListItem post={post} />)
+              recentPosts.map((post, index) => (
+                <PostListItem post={post} isFirstInList={index === 0} />
+              ))
             ) : (
-              <div class="rounded-lg border border-[#262626] bg-[#050505] px-6 py-10">
-                <p class="text-[15px] font-medium text-[#ededed]">
+              <div class="rounded-lg border border-border bg-[#050505] px-6 py-10">
+                <p class="text-[15px] font-medium text-foreground">
                   Tu biblioteca está vacía.
                 </p>
 
-                <p class="mt-2 text-[14px] leading-6 text-[#737373]">
+                <p class="mt-2 text-[14px] leading-6 text-subtle">
                   Añade tu primer archivo Markdown dentro de src/content/posts.
                 </p>
               </div>
             )
           }
         </section>
+
+        {
+          sortedPosts.length > recentPosts.length && (
+            <a
+              href="/articulos/"
+              class="mt-8 inline-flex min-h-9 items-center gap-2 rounded-md px-2 text-[13px] font-medium text-muted transition-colors hover:bg-surface-soft hover:text-foreground"
+            >
+              Ver todos los artículos
+
+              <ArrowRight class="size-4" stroke-width={1.75} />
+            </a>
+          )
+        }
       </div>
 
       <aside class="hidden xl:block">
-        <div class="sticky top-24 border-l border-[#262626] pl-7">
-          <h2 class="text-[14px] font-semibold text-[#ededed]">Categorías</h2>
+        <div class="sticky top-24 border-l border-border pl-7">
+          <h2 class="text-[14px] font-semibold text-foreground">Categorías</h2>
 
           <nav aria-label="Categorías" class="mt-3">
             <ul class="space-y-0.5">
@@ -80,18 +95,18 @@ const categories = libraryNavigation.map((category) => {
                   <li>
                     <a
                       href={category.href}
-                      class="group flex min-h-9 items-center gap-2 rounded-md px-2 text-[13px] text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed]"
+                      class="group flex min-h-9 items-center gap-2 rounded-md px-2 text-[13px] text-muted transition-colors hover:bg-surface-soft hover:text-foreground"
                     >
                       <span class="min-w-0 flex-1 truncate">
                         {category.label}
                       </span>
 
-                      <span class="text-[11px] tabular-nums text-[#525252]">
+                      <span class="text-[11px] tabular-nums text-border-muted">
                         {category.count}
                       </span>
 
                       <ChevronRight
-                        class="size-3.5 shrink-0 text-[#525252] transition-transform group-hover:translate-x-0.5"
+                        class="size-3.5 shrink-0 text-border-muted transition-transform group-hover:translate-x-0.5"
                         stroke-width={1.75}
                       />
                     </a>
@@ -101,8 +116,8 @@ const categories = libraryNavigation.map((category) => {
             </ul>
           </nav>
 
-          <div class="mt-7 border-t border-[#262626] pt-5">
-            <p class="text-[12px] leading-5 text-[#737373]">
+          <div class="mt-7 border-t border-border pt-5">
+            <p class="text-[12px] leading-5 text-subtle">
               {
                 posts.length === 1
                   ? "1 artículo guardado"

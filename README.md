@@ -1,63 +1,60 @@
-# Astro Starter Kit: Blog
+# MyBlog
 
-```sh
-pnpm create astro@latest -- --template blog
+Biblioteca personal de notas y artículos técnicos construida como un sitio estático.
+
+## Stack
+
+- Astro
+- TypeScript
+- Tailwind CSS 4
+- Content Collections
+- Markdown
+- Lucide
+
+## Desarrollo
+
+```bash
+pnpm install
+pnpm dev
+pnpm build
+pnpm preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Estructura principal
 
-Features:
+- `src/content/posts`: artículos Markdown organizados por categoría.
+- `src/config/categories.ts`: fuente de verdad de categorías.
+- `src/components`: componentes de interfaz y comportamiento del sitio.
+- `src/pages/articulos.astro`: índice completo de artículos.
+- `src/styles`: tokens, estilos globales, Markdown y estados de interfaz.
+- `public/images/posts`: imágenes públicas de artículos.
+- `docs/article.example.md`: referencia para escribir artículos.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+## Crear un artículo
 
-## 🚀 Project Structure
+Crea un archivo en `src/content/posts/<category>/<slug>.md`. Usa
+`docs/article.example.md` como plantilla de frontmatter y contenido.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Crear una categoría
+
+Añade la categoría en `src/config/categories.ts`. Desde esa configuración se
+derivan el schema de contenido, la navegación y las rutas de categoría.
+
+## Imágenes
+
+Guarda las imágenes de un artículo en:
 
 ```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+public/images/posts/<category>/<slug>/
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Úsalas desde Markdown con una ruta pública:
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+```md
+![Texto alternativo](/images/posts/<category>/<slug>/imagen.webp)
+```
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+## Producción
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+Ejecuta `pnpm build` para generar la salida estática compatible con Vercel.
+Configura la URL y los metadatos globales del sitio en `src/config/site.ts`.

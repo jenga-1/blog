@@ -30,13 +30,13 @@ const isActive =
     "group flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-[14px] transition-colors duration-150",
     isActive
       ? "bg-[#1d1d1f] text-white"
-      : "text-[#ededed] hover:bg-[#111111] hover:text-white",
+      : "text-foreground hover:bg-surface-soft hover:text-white",
   ]}
 >
   <span
     class:list={[
       "flex size-5 shrink-0 items-center justify-center transition-colors",
-      isActive ? "text-white" : "text-[#a1a1a1] group-hover:text-white",
+      isActive ? "text-white" : "text-muted group-hover:text-white",
     ]}
   >
     <SidebarIcon name={item.icon} />
@@ -50,7 +50,7 @@ const isActive =
     showChevron && (
       <ChevronRight
         data-sidebar-item-chevron
-        class="size-4 shrink-0 text-[#737373] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[#a1a1a1]"
+        class="size-4 shrink-0 text-subtle transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-muted"
         stroke-width={1.75}
       />
     )

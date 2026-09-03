@@ -23,7 +23,7 @@ const {
 
 const siteUrl = Astro.site ?? new URL(siteConfig.url);
 
-const articleUrl = new URL(`/${slug}`, siteUrl).toString();
+const articleUrl = new URL(`/${slug}/`, siteUrl).toString();
 
 const imageUrl = new URL(image, siteUrl).toString();
 

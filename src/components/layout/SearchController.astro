@@ -1,0 +1,260 @@
+<script is:inline>
+  (() => {
+    const searchDialog = document.querySelector("[data-search-dialog]");
+    const searchPanel = document.querySelector("[data-search-panel]");
+    const searchInput = document.querySelector("[data-search-input]");
+    const searchTriggers = document.querySelectorAll("[data-search-trigger]");
+    const searchClose = document.querySelector("[data-search-close]");
+    const searchEmpty = document.querySelector("[data-search-empty]");
+    const searchNoResults = document.querySelector("[data-search-no-results]");
+    const searchResultsWrapper = document.querySelector(
+      "[data-search-results-wrapper]",
+    );
+    const searchResults = document.querySelector("[data-search-results]");
+    const searchResultsCount = document.querySelector(
+      "[data-search-results-count]",
+    );
+
+    let activeSearchIndex = 0;
+    let currentResults = [];
+
+    const searchItems = window.__myblogSearchItems ?? [];
+
+    const normalizeText = (value) =>
+      value
+        .toLocaleLowerCase("es")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+    const escapeHtml = (value) =>
+      value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    const scoreItem = (item, query) => {
+      const normalizedQuery = normalizeText(query);
+      const title = normalizeText(item.title);
+      const description = normalizeText(item.description);
+      const category = normalizeText(item.categoryLabel);
+      const tags = item.tags.map(normalizeText);
+
+      let score = 0;
+
+      if (title === normalizedQuery) score += 100;
+      if (title.startsWith(normalizedQuery)) score += 60;
+      if (title.includes(normalizedQuery)) score += 40;
+      if (category === normalizedQuery) score += 35;
+      if (category.includes(normalizedQuery)) score += 20;
+
+      for (const tag of tags) {
+        if (tag === normalizedQuery) {
+          score += 30;
+        } else if (tag.includes(normalizedQuery)) {
+          score += 15;
+        }
+      }
+
+      if (description.includes(normalizedQuery)) score += 10;
+
+      for (const word of normalizedQuery.split(/\s+/).filter(Boolean)) {
+        if (title.includes(word)) score += 10;
+        if (category.includes(word)) score += 5;
+        if (tags.some((tag) => tag.includes(word))) score += 5;
+      }
+
+      return score;
+    };
+
+    const updateSearchSelection = () => {
+      const resultElements =
+        searchResults?.querySelectorAll("[data-search-result]") ?? [];
+
+      resultElements.forEach((element, index) => {
+        const active = index === activeSearchIndex;
+
+        element.dataset.active = active ? "true" : "false";
+
+        if (active) {
+          element.scrollIntoView({ block: "nearest" });
+        }
+      });
+    };
+
+    const navigateToSelectedResult = () => {
+      const selected = currentResults[activeSearchIndex];
+
+      if (selected) {
+        window.location.href = selected.href;
+      }
+    };
+
+    const renderResults = (query) => {
+      if (
+        !searchResults ||
+        !searchEmpty ||
+        !searchNoResults ||
+        !searchResultsWrapper
+      ) {
+        return;
+      }
+
+      const trimmedQuery = query.trim();
+
+      if (!trimmedQuery) {
+        currentResults = [];
+        activeSearchIndex = 0;
+        searchEmpty.classList.remove("hidden");
+        searchNoResults.classList.add("hidden");
+        searchResultsWrapper.classList.add("hidden");
+        searchResults.innerHTML = "";
+        return;
+      }
+
+      currentResults = searchItems
+        .map((item) => ({ ...item, score: scoreItem(item, trimmedQuery) }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 8);
+
+      activeSearchIndex = 0;
+      searchEmpty.classList.add("hidden");
+
+      if (currentResults.length === 0) {
+        searchNoResults.classList.remove("hidden");
+        searchResultsWrapper.classList.add("hidden");
+        searchResults.innerHTML = "";
+        return;
+      }
+
+      searchNoResults.classList.add("hidden");
+      searchResultsWrapper.classList.remove("hidden");
+
+      if (searchResultsCount) {
+        searchResultsCount.textContent =
+          currentResults.length === 1
+            ? "1 resultado"
+            : `${currentResults.length} resultados`;
+      }
+
+      searchResults.innerHTML = currentResults
+        .map(
+          (item, index) => `
+              <a
+                href="${escapeHtml(item.href)}"
+                data-search-result
+                data-active="${index === 0 ? "true" : "false"}"
+                class="group flex items-start gap-3 rounded-lg px-3 py-3 transition-colors"
+              >
+                <div class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-background">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="text-subtle" aria-hidden="true">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="truncate text-[13px] font-medium text-foreground">
+                      ${escapeHtml(item.title)}
+                    </span>
+                  </div>
+
+                  <p class="mt-0.5 line-clamp-1 text-[12px] text-subtle">
+                    ${escapeHtml(item.description)}
+                  </p>
+
+                  <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span class="text-[11px] text-accent">${escapeHtml(item.categoryLabel)}</span>
+                    ${item.tags
+                      .slice(0, 3)
+                      .map(
+                        (tag) => `
+                          <span class="text-[11px] text-border-muted">
+                            · ${escapeHtml(tag)}
+                          </span>
+                        `,
+                      )
+                      .join("")}
+                  </div>
+                </div>
+
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="mt-1 shrink-0 text-border-muted" aria-hidden="true">
+                  <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                </svg>
+              </a>
+            `,
+        )
+        .join("");
+    };
+
+    const openSearch = () => {
+      if (!searchDialog) return;
+
+      searchDialog.classList.remove("hidden", "pointer-events-none", "opacity-0");
+      searchDialog.classList.add("flex", "pointer-events-auto", "opacity-100");
+      document.body.style.overflow = "hidden";
+
+      window.requestAnimationFrame(() => searchInput?.focus());
+    };
+
+    const closeSearch = () => {
+      if (!searchDialog) return;
+
+      searchDialog.classList.add("hidden", "pointer-events-none", "opacity-0");
+      searchDialog.classList.remove("flex", "pointer-events-auto", "opacity-100");
+      document.body.style.overflow = "";
+
+      if (searchInput) searchInput.value = "";
+
+      renderResults("");
+    };
+
+    searchTriggers.forEach((trigger) => {
+      trigger.addEventListener("click", openSearch);
+    });
+
+    searchClose?.addEventListener("click", closeSearch);
+    searchInput?.addEventListener("input", () => renderResults(searchInput.value));
+
+    searchDialog?.addEventListener("click", (event) => {
+      if (event.target === searchDialog) closeSearch();
+    });
+
+    searchPanel?.addEventListener("click", (event) => event.stopPropagation());
+
+    document.addEventListener("keydown", (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        openSearch();
+        return;
+      }
+
+      if (!searchDialog?.classList.contains("flex")) return;
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+
+        if (currentResults.length > 0) {
+          activeSearchIndex = (activeSearchIndex + 1) % currentResults.length;
+          updateSearchSelection();
+        }
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+
+        if (currentResults.length > 0) {
+          activeSearchIndex =
+            (activeSearchIndex - 1 + currentResults.length) % currentResults.length;
+          updateSearchSelection();
+        }
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        navigateToSelectedResult();
+      } else if (event.key === "Escape") {
+        closeSearch();
+      }
+    });
+  })();
+</script>

@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "MyBlog",
   description:
-    "Mi biblioteca personal de programación, arquitectura, seguridad, cocina y todo aquello que voy aprendiendo.",
+    "Mi biblioteca personal de programación, arquitectura, seguridad, diseño y todo aquello que voy aprendiendo.",
 
   url: "https://blog-neon-eight-59.vercel.app/",
 

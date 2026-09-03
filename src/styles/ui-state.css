@@ -24,7 +24,7 @@
 
 [data-toc-link][data-active="true"] {
   background: var(--surface-soft);
-  color: var(--accent-hover);
+  color: var(--accent);
 }
 
 [data-toc-link][data-active="true"]::before {
@@ -34,7 +34,7 @@
   left: -1.78rem;
   width: 2px;
   border-radius: 999px;
-  background: var(--accent);
+  background: var(--accent-emphasis);
   content: "";
 }
 

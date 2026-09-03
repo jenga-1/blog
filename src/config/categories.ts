@@ -77,5 +77,5 @@ export function getCategoryConfig(category: CategoryKey) {
 }
 
 export function getCategoryHref(category: CategoryKey): string {
-  return `/${category}`;
+  return `/${category}/`;
 }

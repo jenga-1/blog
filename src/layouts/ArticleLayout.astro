@@ -50,7 +50,7 @@ const lastUpdated = updatedAt ?? publishedAt;
   title={title}
   description={description}
   image={image}
-  canonical={`/${slug}`}
+  canonical={`/${slug}/`}
   ogType="article"
 >
   <ArticleStructuredData
@@ -68,17 +68,17 @@ const lastUpdated = updatedAt ?? publishedAt;
       class="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-12 px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12 xl:grid-cols-[minmax(0,760px)_240px] xl:gap-16 xl:px-12"
     >
       <article class="min-w-0 pb-20 sm:pb-24">
-        <header class="border-b border-[#262626] pb-7 sm:pb-8">
+        <header class="border-b border-border pb-7 sm:pb-8">
           <div class="flex items-start gap-4 sm:gap-5">
             <div class="min-w-0 flex-1">
               <h1
-                class="max-w-[760px] text-[32px] font-semibold leading-[1.08] tracking-[-0.04em] text-[#ededed] sm:text-[40px] lg:text-[48px]"
+                class="max-w-[760px] text-[32px] font-semibold leading-[1.08] tracking-[-0.04em] text-foreground sm:text-[40px] lg:text-[48px]"
               >
                 {title}
               </h1>
 
               <p
-                class="mt-4 max-w-[700px] text-[15px] leading-7 text-[#a1a1a1] sm:mt-5 sm:text-[16px]"
+                class="mt-4 max-w-[700px] text-[15px] leading-7 text-muted sm:mt-5 sm:text-[16px]"
               >
                 {description}
               </p>
@@ -91,7 +91,7 @@ const lastUpdated = updatedAt ?? publishedAt;
             class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-7 sm:gap-x-6"
           >
             <div
-              class="flex items-center gap-2 text-[12px] text-[#a1a1a1] sm:text-[13px]"
+              class="flex items-center gap-2 text-[12px] text-muted sm:text-[13px]"
             >
               <CalendarDays class="size-4" stroke-width={1.75} />
 
@@ -101,7 +101,7 @@ const lastUpdated = updatedAt ?? publishedAt;
             </div>
 
             <div
-              class="flex items-center gap-2 text-[12px] text-[#a1a1a1] sm:text-[13px]"
+              class="flex items-center gap-2 text-[12px] text-muted sm:text-[13px]"
             >
               <Clock3 class="size-4" stroke-width={1.75} />
 
@@ -114,7 +114,7 @@ const lastUpdated = updatedAt ?? publishedAt;
               tags.length > 0 && (
                 <div class="flex w-full flex-wrap gap-2 sm:w-auto">
                   {tags.map((tag) => (
-                    <span class="rounded-full border border-[#262626] bg-[#111111] px-2.5 py-1 text-[11px] leading-none text-[#a1a1a1] sm:text-[12px]">
+                    <span class="rounded-full border border-border bg-surface-soft px-2.5 py-1 text-[11px] leading-none text-muted sm:text-[12px]">
                       {tag}
                     </span>
                   ))}

@@ -24,7 +24,7 @@ export async function GET(context: { site?: URL }) {
 
       pubDate: post.data.publishedAt,
 
-      link: `/${post.id}`,
+      link: `/${post.id}/`,
     })),
 
     customData: `

@@ -18,7 +18,6 @@ import {
   Network,
   Palette,
   Server,
-  Settings,
   ShieldCheck,
   Smartphone,
   Star,
@@ -58,7 +57,6 @@ export const categoryIcons = {
 export const sidebarIcons = {
   ...categoryIcons,
   star: Star,
-  settings: Settings,
 } as const;
 
 export type CategoryIcon = keyof typeof categoryIcons;

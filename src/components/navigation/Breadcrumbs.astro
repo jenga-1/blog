@@ -13,7 +13,7 @@ const pathname = Astro.url.pathname;
 
 const posts = await getCollection("posts", ({ data }) => !data.draft);
 
-const activePost = posts.find((post) => `/${post.id}` === pathname);
+const activePost = posts.find((post) => `/${post.id}/` === pathname);
 
 const activeCategory = activePost
   ? getCategoryNavigation(activePost.data.category)
@@ -25,14 +25,24 @@ const standaloneCategory = libraryNavigation.find(
 
 const utilityItem = utilityNavigation.find((item) => item.href === pathname);
 
+const libraryIndex =
+  pathname === "/articulos/"
+    ? { label: "Biblioteca", href: "/articulos/" }
+    : undefined;
+
 const firstLabel =
+  libraryIndex?.label ??
   activeCategory?.label ??
   standaloneCategory?.label ??
   utilityItem?.label ??
   "Inicio";
 
 const firstHref =
-  activeCategory?.href ?? standaloneCategory?.href ?? utilityItem?.href ?? "/";
+  libraryIndex?.href ??
+  activeCategory?.href ??
+  standaloneCategory?.href ??
+  utilityItem?.href ??
+  "/";
 
 const secondLabel = activePost?.data.sidebarLabel ?? activePost?.data.title;
 ---
@@ -44,7 +54,7 @@ const secondLabel = activePost?.data.sidebarLabel ?? activePost?.data.title;
   <a
     href={firstHref}
     class:list={[
-      "truncate text-[#a1a1a1] transition-colors hover:text-[#ededed]",
+      "truncate text-muted transition-colors hover:text-foreground",
       secondLabel ? "hidden sm:block" : "block",
     ]}
   >
@@ -55,11 +65,11 @@ const secondLabel = activePost?.data.sidebarLabel ?? activePost?.data.title;
     secondLabel && (
       <>
         <ChevronRight
-          class="hidden size-4 shrink-0 text-[#525252] sm:block"
+          class="hidden size-4 shrink-0 text-border-muted sm:block"
           stroke-width={1.75}
         />
 
-        <span class="truncate text-[#ededed]" aria-current="page">
+        <span class="truncate text-foreground" aria-current="page">
           {secondLabel}
         </span>
       </>

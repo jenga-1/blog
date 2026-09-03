@@ -3,11 +3,17 @@ import { Menu, Search, Sun } from "@lucide/astro";
 
 import Breadcrumbs from "@/components/navigation/Breadcrumbs.astro";
 import BrandMark from "@/components/ui/BrandMark.astro";
+
+import { siteConfig } from "@/config/site";
+
+import { getInitials } from "@/utils/get-initials";
+
+const authorInitials = getInitials(siteConfig.author.name);
 ---
 
 <header
   data-app-navbar
-  class="fixed inset-x-0 top-0 z-30 h-16 border-b border-[#262626] bg-black/95 backdrop-blur-md lg:left-[var(--sidebar-offset)]"
+  class="fixed inset-x-0 top-0 z-30 h-16 border-b border-border bg-black/95 backdrop-blur-md lg:left-[var(--sidebar-offset)]"
 >
   <div class="flex h-full items-center gap-2 px-3 sm:gap-4 sm:px-6">
     <div class="flex shrink-0 items-center gap-1.5 lg:hidden">
@@ -15,15 +21,15 @@ import BrandMark from "@/components/ui/BrandMark.astro";
         data-mobile-sidebar-open
         type="button"
         aria-label="Abrir navegación"
-        class="flex size-10 items-center justify-center rounded-md text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed]"
+        class="flex size-10 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-soft hover:text-foreground"
       >
         <Menu class="size-5" stroke-width={1.75} />
       </button>
 
       <a
         href="/"
-        aria-label="Aprendo - Inicio"
-        class="hidden items-center text-[#ededed] sm:flex"
+        aria-label={`${siteConfig.name} - Inicio`}
+        class="hidden items-center text-foreground sm:flex"
       >
         <BrandMark />
       </a>
@@ -37,14 +43,14 @@ import BrandMark from "@/components/ui/BrandMark.astro";
       data-search-trigger
       type="button"
       aria-label="Buscar contenido"
-      class="hidden h-9 w-[240px] items-center gap-2 rounded-md border border-[#262626] bg-black px-3 text-left text-[13px] text-[#737373] transition-colors hover:border-[#333333] hover:text-[#a1a1a1] md:flex xl:w-[280px]"
+      class="hidden h-9 w-[240px] items-center gap-2 rounded-md border border-border bg-black px-3 text-left text-[13px] text-subtle transition-colors hover:border-border-strong hover:text-muted md:flex xl:w-[280px]"
     >
       <Search class="size-4 shrink-0" stroke-width={1.75} />
 
       <span class="flex-1 truncate"> Buscar </span>
 
       <kbd
-        class="flex h-5 items-center gap-1 rounded border border-[#262626] bg-[#0a0a0a] px-1.5 font-sans text-[11px] text-[#737373]"
+        class="flex h-5 items-center gap-1 rounded border border-border bg-surface px-1.5 font-sans text-[11px] text-subtle"
       >
         <span>⌘</span>
         <span>K</span>
@@ -55,26 +61,26 @@ import BrandMark from "@/components/ui/BrandMark.astro";
       data-search-trigger
       type="button"
       aria-label="Buscar contenido"
-      class="flex size-10 shrink-0 items-center justify-center rounded-md text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed] md:hidden"
+      class="flex size-10 shrink-0 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-soft hover:text-foreground md:hidden"
     >
       <Search class="size-[18px]" stroke-width={1.75} />
     </button>
 
-    <div class="hidden h-5 w-px bg-[#262626] md:block"></div>
+    <div class="hidden h-5 w-px bg-border md:block"></div>
 
     <div
-      class="hidden size-9 shrink-0 items-center justify-center rounded-md text-[#a1a1a1] md:flex"
-      title="Aprendo utiliza siempre la misma apariencia oscura"
+      class="hidden size-9 shrink-0 items-center justify-center rounded-md text-muted md:flex"
+      title={`${siteConfig.name} utiliza siempre la misma apariencia oscura`}
     >
       <Sun class="size-[18px]" stroke-width={1.75} />
     </div>
 
-    <div class="hidden h-5 w-px bg-[#262626] sm:block"></div>
+    <div class="hidden h-5 w-px bg-border sm:block"></div>
 
     <div
-      class="hidden size-8 shrink-0 items-center justify-center rounded-full border border-[#333333] bg-[#111111] text-[11px] font-medium text-[#ededed] sm:flex"
+      class="hidden size-8 shrink-0 items-center justify-center rounded-full border border-border-strong bg-surface-soft text-[11px] font-medium text-foreground sm:flex"
     >
-      JG
+      {authorInitials}
     </div>
   </div>
 </header>

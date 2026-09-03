@@ -1,7 +1,8 @@
 ---
 import "../styles/global.css";
 
-import AppShellController from "@/components/layout/AppShellController.astro";
+import SearchController from "@/components/layout/SearchController.astro";
+import SidebarController from "@/components/layout/SidebarController.astro";
 import Navbar from "@/components/navigation/Navbar.astro";
 import SearchDialog from "@/components/navigation/SearchDialog.astro";
 import Sidebar from "@/components/navigation/Sidebar.astro";
@@ -28,8 +29,10 @@ const {
 
 const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.name;
 
+const canonicalPath = (canonical ?? Astro.url.pathname).replace(/\/?$/, "/");
+
 const canonicalUrl = new URL(
-  canonical ?? Astro.url.pathname,
+  canonicalPath,
   Astro.site ?? siteConfig.url,
 );
 
@@ -103,6 +106,7 @@ const imageUrl = new URL(image, Astro.site ?? siteConfig.url);
 
     <SearchDialog />
 
-    <AppShellController />
+    <SidebarController />
+    <SearchController />
   </body>
 </html>

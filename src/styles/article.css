@@ -64,7 +64,7 @@
 }
 
 .article-content a {
-  color: var(--accent-hover);
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -136,7 +136,7 @@
 }
 
 .article-content a code {
-  color: var(--accent-hover);
+  color: var(--accent);
 }
 
 /* ==========================================================================

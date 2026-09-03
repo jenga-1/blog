@@ -15,7 +15,7 @@ sidebarLabel: "Modo incógnito"
 order: 2
 ---
 
-# El modo incógnito no te hace invisible
+## El modo incógnito no te hace invisible
 
 Abrir una ventana de incógnito puede dar una falsa sensación de anonimato.
 
@@ -99,9 +99,9 @@ Cerrar la ventana privada no significa necesariamente que desaparezca la informa
 
 ---
 
-# Entonces, ¿quién puede seguir viendo información?
+## Entonces, ¿quién puede seguir viendo información?
 
-## 1. Los sitios web que visitas
+### 1. Los sitios web que visitas
 
 El servidor necesita recibir información para poder responder a tu solicitud.
 
@@ -122,7 +122,7 @@ Por eso cerrar la ventana de incógnito no elimina automáticamente los registro
 
 ---
 
-## 2. Tu proveedor de Internet
+### 2. Tu proveedor de Internet
 
 Antes de llegar a un sitio web, normalmente tu conexión pasa por la infraestructura de tu proveedor de Internet.
 
@@ -134,7 +134,7 @@ HTTPS protege el contenido que viaja entre tu navegador y el servidor, pero no c
 
 ---
 
-## 3. La red que estás utilizando
+### 3. La red que estás utilizando
 
 Esto es especialmente importante en:
 
@@ -167,7 +167,7 @@ Aunque el navegador no guarde el historial local, la infraestructura de la organ
 
 ---
 
-## 4. Tu cuenta de Google u otros servicios
+### 4. Tu cuenta de Google u otros servicios
 
 Existe otro detalle importante.
 
@@ -189,11 +189,11 @@ Eliminar uno no necesariamente elimina el otro.
 
 ---
 
-# ¿Qué información sí puede sobrevivir al modo incógnito?
+## ¿Qué información sí puede sobrevivir al modo incógnito?
 
 Aunque cierres correctamente la sesión privada, existen elementos que pueden permanecer.
 
-## Archivos descargados
+### Archivos descargados
 
 Este es probablemente el ejemplo más sencillo.
 
@@ -211,13 +211,13 @@ El navegador puede borrar el registro interno de la descarga, pero **no elimina 
 
 ---
 
-## Marcadores
+### Marcadores
 
 Si guardas una página como favorito durante una sesión privada, ese marcador puede permanecer después de cerrar incógnito.
 
 ---
 
-## Actividad almacenada por servicios externos
+### Actividad almacenada por servicios externos
 
 Una búsqueda, reproducción de video, inicio de sesión o interacción con determinada plataforma puede generar registros en los servidores de ese servicio.
 
@@ -225,7 +225,7 @@ Estos registros están fuera del navegador.
 
 ---
 
-## Registros de red
+### Registros de red
 
 También pueden existir registros generados por:
 
@@ -240,11 +240,11 @@ Su existencia y duración dependen completamente del sistema utilizado y de las 
 
 ---
 
-# ¿Se puede recuperar el historial de incógnito?
+## ¿Se puede recuperar el historial de incógnito?
 
 Aquí hay que distinguir dos situaciones.
 
-## Desde el historial normal del navegador
+### Desde el historial normal del navegador
 
 Normalmente no.
 
@@ -264,7 +264,7 @@ después de cerrar la sesión privada.
 
 ---
 
-## Desde otros lugares
+### Desde otros lugares
 
 Eso no significa que toda evidencia de la conexión haya desaparecido.
 
@@ -292,7 +292,7 @@ No existe un único **archivo secreto de historial incógnito** que contenga nec
 
 ---
 
-# El caso del DNS
+## El caso del DNS
 
 DNS puede entenderse como una especie de sistema de traducción de Internet.
 
@@ -330,7 +330,7 @@ Es una diferencia importante.
 
 ---
 
-# Cómo comprobar qué información guarda tu propio navegador
+## Cómo comprobar qué información guarda tu propio navegador
 
 Para entender mejor la diferencia puedes hacer una prueba sencilla.
 
@@ -352,7 +352,7 @@ Esta prueba demuestra exactamente para qué fue diseñado el modo incógnito:
 
 ---
 
-# ¿Cómo borrar realmente tu actividad?
+## ¿Cómo borrar realmente tu actividad?
 
 No existe un botón universal que borre absolutamente todos los registros relacionados con una conexión.
 
@@ -360,7 +360,7 @@ Hay que pensar por capas.
 
 ---
 
-## Capa 1: navegador
+### Capa 1: navegador
 
 En una navegación convencional puedes eliminar:
 
@@ -376,7 +376,7 @@ En incógnito, gran parte de ellos deberían eliminarse automáticamente al cerr
 
 ---
 
-## Capa 2: archivos descargados
+### Capa 2: archivos descargados
 
 Revisa las carpetas donde tu navegador guarda archivos.
 
@@ -390,7 +390,7 @@ Si descargaste un archivo durante la sesión privada y ya no lo necesitas, tendr
 
 ---
 
-## Capa 3: cuentas online
+### Capa 3: cuentas online
 
 Este punto suele olvidarse.
 
@@ -410,7 +410,7 @@ Datos de la cuenta → se administran desde el servicio correspondiente.
 
 ---
 
-## Capa 4: servicios externos
+### Capa 4: servicios externos
 
 Facebook, TikTok, YouTube, Instagram, Amazon y prácticamente cualquier servicio online puede mantener registros propios según sus políticas.
 
@@ -427,7 +427,7 @@ Cada servicio controla sus propios sistemas.
 
 ---
 
-## Capa 5: infraestructura de red
+### Capa 5: infraestructura de red
 
 Los registros administrados por:
 
@@ -442,7 +442,7 @@ Por lo tanto, limpiar Chrome, Firefox o Edge no elimina estos registros.
 
 ---
 
-# ¿Y utilizar una VPN?
+## ¿Y utilizar una VPN?
 
 Una VPN modifica parte del modelo.
 
@@ -495,7 +495,7 @@ La propia cuenta sigue identificándote.
 
 ---
 
-# Incógnito + VPN tampoco significa anonimato perfecto
+## Incógnito + VPN tampoco significa anonimato perfecto
 
 Es importante evitar otro mito.
 
@@ -529,7 +529,7 @@ No son una capa de invisibilidad.
 
 ---
 
-# ¿Para qué sirve entonces el modo incógnito?
+## ¿Para qué sirve entonces el modo incógnito?
 
 Que no proporcione anonimato no significa que sea inútil.
 
@@ -558,7 +558,7 @@ Para desarrolladores es útil para comprobar determinados comportamientos sin ut
 
 ---
 
-# La idea que debes recordar
+## La idea que debes recordar
 
 La mejor forma de entender el modo incógnito es esta:
 
@@ -591,7 +591,7 @@ No necesariamente las huellas que existen fuera de él.
 
 ---
 
-# Conclusión
+## Conclusión
 
 El nombre "modo incógnito" puede resultar engañoso si se interpreta literalmente.
 

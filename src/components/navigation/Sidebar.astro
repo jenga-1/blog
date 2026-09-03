@@ -9,7 +9,11 @@ import BrandMark from "@/components/ui/BrandMark.astro";
 import { libraryNavigation, utilityNavigation } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 
+import { getInitials } from "@/utils/get-initials";
+
 const pathname = Astro.url.pathname;
+
+const authorInitials = getInitials(siteConfig.author.name);
 
 const posts = await getCollection("posts", ({ data }) => !data.draft);
 
@@ -29,7 +33,7 @@ const generatedNavigation = libraryNavigation.map((item) => {
     })
     .map((post) => ({
       label: post.data.sidebarLabel ?? post.data.title,
-      href: `/${post.id}`,
+      href: `/${post.id}/`,
     }));
 
   if (postChildren.length === 0) {
@@ -51,13 +55,13 @@ const generatedNavigation = libraryNavigation.map((item) => {
 
 <aside
   data-sidebar
-  class="fixed inset-y-0 left-0 z-50 flex w-[min(272px,calc(100vw-40px))] -translate-x-full flex-col border-r border-[#262626] bg-black transition-transform duration-200 ease-out lg:w-[272px] lg:translate-x-0"
+  class="fixed inset-y-0 left-0 z-50 flex w-[min(272px,calc(100vw-40px))] -translate-x-full flex-col border-r border-border bg-black transition-transform duration-200 ease-out lg:w-[272px] lg:translate-x-0"
 >
-  <div class="flex h-16 shrink-0 items-center border-b border-[#262626] px-5">
+  <div class="flex h-16 shrink-0 items-center border-b border-border px-5">
     <a
       href="/"
       aria-label={`${siteConfig.name} - Inicio`}
-      class="flex min-w-0 items-center gap-2.5 text-[#ededed]"
+      class="flex min-w-0 items-center gap-2.5 text-foreground"
     >
       <BrandMark />
 
@@ -73,7 +77,7 @@ const generatedNavigation = libraryNavigation.map((item) => {
       data-desktop-sidebar-toggle
       type="button"
       aria-label="Contraer navegación"
-      class="ml-auto hidden size-8 items-center justify-center rounded-md text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed] lg:flex"
+      class="ml-auto hidden size-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-soft hover:text-foreground lg:flex"
     >
       <ChevronLeft
         data-collapse-icon
@@ -86,7 +90,7 @@ const generatedNavigation = libraryNavigation.map((item) => {
       data-mobile-sidebar-close
       type="button"
       aria-label="Cerrar navegación"
-      class="ml-auto flex size-8 items-center justify-center rounded-md text-[#a1a1a1] transition-colors hover:bg-[#111111] hover:text-[#ededed] lg:hidden"
+      class="ml-auto flex size-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-soft hover:text-foreground lg:hidden"
     >
       <X class="size-[18px]" stroke-width={1.75} />
     </button>
@@ -99,7 +103,7 @@ const generatedNavigation = libraryNavigation.map((item) => {
     <nav aria-label="Navegación principal">
       <p
         data-sidebar-section-label
-        class="mb-2 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-[#737373]"
+        class="mb-2 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-subtle"
       >
         Biblioteca
       </p>
@@ -117,16 +121,9 @@ const generatedNavigation = libraryNavigation.map((item) => {
       </div>
     </nav>
 
-    <div class="my-5 h-px bg-[#262626]"></div>
+    <div class="my-5 h-px bg-border"></div>
 
-    <nav aria-label="Utilidades">
-      <p
-        data-sidebar-section-label
-        class="mb-2 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-[#737373]"
-      >
-        Utilidades
-      </p>
-
+    <nav aria-label="Favoritos">
       <div class="space-y-0.5">
         {
           utilityNavigation.map((item) => (
@@ -137,23 +134,23 @@ const generatedNavigation = libraryNavigation.map((item) => {
     </nav>
   </div>
 
-  <div data-sidebar-profile class="shrink-0 border-t border-[#262626] p-4">
+  <div data-sidebar-profile class="shrink-0 border-t border-border p-4">
     <div class="flex items-center gap-3 rounded-lg px-2 py-2">
       <div
-        class="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#333333] bg-[#111111] text-sm font-medium text-[#ededed]"
+        class="flex size-9 shrink-0 items-center justify-center rounded-full border border-border-strong bg-surface-soft text-sm font-medium text-foreground"
       >
-        JG
+        {authorInitials}
       </div>
 
       <div data-sidebar-profile-copy class="min-w-0 flex-1">
-        <p class="truncate text-[13px] font-medium leading-5 text-[#ededed]">
+        <p class="truncate text-[13px] font-medium leading-5 text-foreground">
           {siteConfig.author.name}
         </p>
 
         <div class="flex items-center gap-1.5">
           <span class="size-1.5 rounded-full bg-[#22c55e]"></span>
 
-          <span class="truncate text-[12px] leading-4 text-[#737373]">
+          <span class="truncate text-[12px] leading-4 text-subtle">
             Personal
           </span>
         </div>
@@ -161,7 +158,7 @@ const generatedNavigation = libraryNavigation.map((item) => {
 
       <div
         data-sidebar-profile-icon
-        class="flex size-8 shrink-0 items-center justify-center rounded-md text-[#a1a1a1]"
+        class="flex size-8 shrink-0 items-center justify-center rounded-md text-muted"
       >
         <Moon class="size-[18px]" stroke-width={1.75} />
       </div>

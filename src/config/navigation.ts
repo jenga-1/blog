@@ -32,13 +32,8 @@ export const libraryNavigation: NavigationItem[] = categoryEntries.map(
 export const utilityNavigation: NavigationItem[] = [
   {
     label: "Favoritos",
-    href: "/favoritos",
+    href: "/favoritos/",
     icon: "star",
-  },
-  {
-    label: "Ajustes",
-    href: "/ajustes",
-    icon: "settings",
   },
 ];
 

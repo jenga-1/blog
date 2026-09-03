@@ -24,7 +24,7 @@ const childrenId = `sidebar-category-${item.category ?? item.label}`;
 <div
   data-sidebar-group
   class:list={[
-    "group flex min-h-10 items-center rounded-md text-[14px] text-[#ededed] transition-colors duration-150 hover:bg-[#111111] hover:text-white",
+    "group flex min-h-10 items-center rounded-md text-[14px] text-foreground transition-colors duration-150 hover:bg-surface-soft hover:text-white",
     isActiveCategory && "bg-[#1d1d1f] text-white",
   ]}
 >
@@ -37,7 +37,7 @@ const childrenId = `sidebar-category-${item.category ?? item.label}`;
     <span
       class:list={[
         "flex size-5 shrink-0 items-center justify-center transition-colors group-hover:text-white",
-        isActiveCategory ? "text-white" : "text-[#a1a1a1]",
+        isActiveCategory ? "text-white" : "text-muted",
       ]}
     >
       <SidebarIcon name={item.icon} />
@@ -55,7 +55,7 @@ const childrenId = `sidebar-category-${item.category ?? item.label}`;
     aria-label={`${containsActiveChild ? "Contraer" : "Expandir"} ${item.label}`}
     aria-expanded={containsActiveChild ? "true" : "false"}
     aria-controls={childrenId}
-    class="flex size-10 shrink-0 items-center justify-center rounded-md text-[#737373] transition-colors hover:text-[#ededed]"
+    class="flex size-10 shrink-0 items-center justify-center rounded-md text-subtle transition-colors hover:text-foreground"
   >
     <ChevronDown
       data-sidebar-group-chevron
@@ -73,7 +73,7 @@ const childrenId = `sidebar-category-${item.category ?? item.label}`;
   id={childrenId}
   data-sidebar-children
   hidden={!containsActiveChild}
-  class="relative ml-[21px] mt-0.5 space-y-0.5 pb-1 pl-[18px] before:absolute before:inset-y-1 before:left-0 before:w-px before:bg-[#262626]"
+  class="relative ml-[21px] mt-0.5 space-y-0.5 pb-1 pl-[18px] before:absolute before:inset-y-1 before:left-0 before:w-px before:bg-border"
 >
   {
     children.map((child) => {
@@ -87,11 +87,11 @@ const childrenId = `sidebar-category-${item.category ?? item.label}`;
             "relative flex min-h-9 items-center rounded-md px-3 text-[14px] transition-colors duration-150",
             isActive
               ? "bg-[#1d1d1f] text-white"
-              : "text-[#a1a1a1] hover:bg-[#111111] hover:text-[#ededed]",
+              : "text-muted hover:bg-surface-soft hover:text-foreground",
           ]}
         >
           {isActive && (
-            <span class="absolute left-[-21px] top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[#0070f3]" />
+            <span class="absolute left-[-21px] top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-accent-emphasis" />
           )}
 
           <span class="truncate">{child.label}</span>

@@ -5,6 +5,8 @@ import { Star } from "@lucide/astro";
 
 import PostListItem from "@/components/content/PostListItem.astro";
 
+import { getCategoryConfig } from "@/config/categories";
+
 import AppLayout from "@/layouts/AppLayout.astro";
 
 const posts = await getCollection("posts", ({ data }) => !data.draft);
@@ -16,116 +18,269 @@ const sortedPosts = posts.sort(
 
 <AppLayout title="Favoritos">
   <main class="min-h-[calc(100vh-4rem)]">
-    <div class="mx-auto w-full max-w-[980px] px-6 py-12 sm:px-8 lg:px-12">
-      <header class="border-b border-[#262626] pb-8">
-        <p class="text-[13px] font-medium text-[#3291ff]">Biblioteca</p>
+    <div
+      data-favorites-layout
+      class="mx-auto w-full max-w-[980px] px-6 py-12 sm:px-8 lg:px-12"
+    >
+      <div class="min-w-0">
+        <header class="border-b border-border pb-8">
+          <p class="text-[13px] font-medium text-accent">Biblioteca</p>
 
-        <h1
-          class="mt-3 text-[36px] font-semibold tracking-[-0.04em] text-[#ededed] sm:text-[42px]"
-        >
-          Favoritos
-        </h1>
+          <h1
+            class="mt-3 text-[36px] font-semibold tracking-[-0.04em] text-foreground sm:text-[42px]"
+          >
+            Favoritos
+          </h1>
 
-        <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-[#a1a1a1]">
-          Artículos que has guardado para encontrarlos rápidamente.
-        </p>
+          <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-muted">
+            Artículos que has guardado para encontrarlos rápidamente.
+          </p>
 
-        <p data-favorites-count class="mt-5 text-[12px] text-[#525252]">
-          0 artículos
-        </p>
-      </header>
+          <p data-favorites-count class="mt-5 text-[12px] text-border-muted">
+            0 artículos
+          </p>
 
-      <section data-favorites-list>
-        {
-          sortedPosts.map((post) => (
-            <div data-favorite-post data-post-id={post.id} class="hidden">
-              <PostListItem post={post} />
-            </div>
-          ))
-        }
-      </section>
+          <nav
+            data-favorites-mobile-filters
+            data-favorites-filter-container
+            aria-label="Filtrar favoritos por categoría"
+            class="mt-5 hidden gap-2 overflow-x-auto pb-1 xl:hidden"
+          ></nav>
+        </header>
 
-      <div
-        data-favorites-empty
-        class="flex min-h-[320px] flex-col items-center justify-center text-center"
-      >
+        <section data-favorites-list>
+          {
+            sortedPosts.map((post) => {
+              const category = getCategoryConfig(post.data.category);
+
+              return (
+                <div
+                  data-favorite-post
+                  data-post-id={post.id}
+                  data-post-category={post.data.category}
+                  data-post-category-label={category.label}
+                  data-post-category-order={category.order}
+                  class="hidden"
+                >
+                  <PostListItem post={post} />
+                </div>
+              );
+            })
+          }
+        </section>
+
         <div
-          class="flex size-11 items-center justify-center rounded-full border border-[#262626] bg-[#0a0a0a] text-[#737373]"
+          data-favorites-empty
+          class="flex min-h-[320px] flex-col items-center justify-center text-center"
         >
-          <Star class="size-5" stroke-width={1.75} />
+          <div
+            class="flex size-11 items-center justify-center rounded-full border border-border bg-surface text-subtle"
+          >
+            <Star class="size-5" stroke-width={1.75} />
+          </div>
+
+          <p class="mt-4 text-[14px] font-medium text-foreground">
+            Aún no tienes favoritos.
+          </p>
+
+          <p class="mt-1 max-w-sm text-[13px] leading-6 text-subtle">
+            Guarda artículos con el icono de favorito para encontrarlos aquí rápidamente.
+          </p>
         </div>
-
-        <p class="mt-4 text-[14px] font-medium text-[#ededed]">
-          Aún no tienes favoritos.
-        </p>
-
-        <p class="mt-1 max-w-sm text-[13px] leading-6 text-[#737373]">
-          Pulsa la estrella de cualquier artículo para guardarlo aquí.
-        </p>
       </div>
+
+      <aside data-favorites-aside class="hidden">
+        <div class="sticky top-24 border-l border-border pl-7">
+          <h2 class="text-[14px] font-semibold text-foreground">Favoritos</h2>
+
+          <nav aria-label="Filtrar favoritos" class="mt-3">
+            <div
+              data-favorites-desktop-filters
+              data-favorites-filter-container
+              class="space-y-0.5"
+            ></div>
+          </nav>
+        </div>
+      </aside>
     </div>
   </main>
 </AppLayout>
 
-<script is:inline>
+<script>
+  import {
+    favoritesChangedEvent,
+    favoritesStorageKey,
+  } from "@/config/client";
+  import { getFavorites } from "@/utils/favorites";
+
   (() => {
-    const STORAGE_KEY = "aprendo:favorites";
-
-    const postElements = Array.from(
-      document.querySelectorAll("[data-favorite-post]"),
+    const threshold = 6;
+    const layout = document.querySelector<HTMLElement>("[data-favorites-layout]");
+    const aside = document.querySelector<HTMLElement>("[data-favorites-aside]");
+    const mobileFilters = document.querySelector<HTMLElement>(
+      "[data-favorites-mobile-filters]",
     );
+    const filterContainers = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-favorites-filter-container]"),
+    );
+    const postElements = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-favorite-post]"),
+    );
+    const emptyState = document.querySelector<HTMLElement>(
+      "[data-favorites-empty]",
+    );
+    const count = document.querySelector<HTMLElement>("[data-favorites-count]");
 
-    const emptyState = document.querySelector("[data-favorites-empty]");
+    let activeFilter = "all";
 
-    const count = document.querySelector("[data-favorites-count]");
+    const getFavoriteCategories = (favorites: string[]) => {
+      const favoriteIds = new Set(favorites);
+      const categories = new Map<
+        string,
+        { label: string; order: number; count: number }
+      >();
 
-    const getFavorites = () => {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+      postElements.forEach((element) => {
+        const postId = element.dataset.postId;
+        const category = element.dataset.postCategory;
+        const label = element.dataset.postCategoryLabel;
+        const order = Number(element.dataset.postCategoryOrder);
 
-        if (!raw) {
-          return [];
+        if (!postId || !category || !label || !favoriteIds.has(postId)) {
+          return;
         }
 
-        const value = JSON.parse(raw);
+        const current = categories.get(category);
 
-        return Array.isArray(value) ? value : [];
-      } catch {
-        return [];
-      }
+        categories.set(category, {
+          label,
+          order,
+          count: (current?.count ?? 0) + 1,
+        });
+      });
+
+      return categories;
+    };
+
+    const renderFilters = (
+      categories: Map<string, { label: string; order: number; count: number }>,
+      total: number,
+    ) => {
+      const options = [
+        { key: "all", label: "Todos", count: total },
+        ...Array.from(categories.entries())
+          .sort(
+            ([firstKey, first], [secondKey, second]) =>
+              second.count - first.count || first.order - second.order || firstKey.localeCompare(secondKey),
+          )
+          .map(([key, category]) => ({ key, ...category })),
+      ];
+
+      filterContainers.forEach((container) => {
+        container.replaceChildren(
+          ...options.map((option) => {
+            const button = document.createElement("button");
+            const active = option.key === activeFilter;
+
+            button.type = "button";
+            button.dataset.favoritesFilter = option.key;
+            button.setAttribute("aria-pressed", String(active));
+            button.className = container.hasAttribute(
+              "data-favorites-desktop-filters",
+            )
+              ? `flex min-h-9 w-full items-center gap-2 rounded-md px-2 text-left text-[13px] transition-colors ${
+                  active
+                    ? "bg-surface-soft font-medium text-foreground"
+                    : "text-muted hover:bg-surface-soft hover:text-foreground"
+                }`
+              : `shrink-0 rounded-md border px-3 py-1.5 text-[12px] transition-colors ${
+                  active
+                    ? "border-border-strong bg-surface-soft font-medium text-foreground"
+                    : "border-border bg-background text-muted hover:bg-surface-soft hover:text-foreground"
+                }`;
+
+            const label = document.createElement("span");
+            label.className = "min-w-0 flex-1 truncate";
+            label.textContent = option.label;
+
+            const value = document.createElement("span");
+            value.className = "shrink-0 text-[11px] tabular-nums text-border-muted";
+            value.textContent = String(option.count);
+
+            button.append(label, value);
+
+            return button;
+          }),
+        );
+      });
     };
 
     const render = () => {
       const favorites = getFavorites();
+      const favoriteIds = new Set(favorites);
+      const categories = getFavoriteCategories(favorites);
+      const total = Array.from(categories.values()).reduce(
+        (sum, category) => sum + category.count,
+        0,
+      );
+      const showFilters = total >= threshold;
 
-      let visibleCount = 0;
+      if (!showFilters || (activeFilter !== "all" && !categories.has(activeFilter))) {
+        activeFilter = "all";
+      }
+
+      layout?.classList.toggle("xl:grid", showFilters);
+      layout?.classList.toggle("xl:max-w-[1180px]", showFilters);
+      layout?.classList.toggle("xl:grid-cols-[minmax(0,760px)_220px]", showFilters);
+      layout?.classList.toggle("xl:gap-14", showFilters);
+      aside?.classList.toggle("xl:block", showFilters);
+      mobileFilters?.classList.toggle("hidden", !showFilters);
+      mobileFilters?.classList.toggle("flex", showFilters);
 
       postElements.forEach((element) => {
         const postId = element.dataset.postId;
+        const category = element.dataset.postCategory;
+        const isFavorite = Boolean(postId) && favoriteIds.has(postId);
+        const matchesFilter = activeFilter === "all" || category === activeFilter;
 
-        const active = Boolean(postId) && favorites.includes(postId);
-
-        element.classList.toggle("hidden", !active);
-
-        if (active) {
-          visibleCount += 1;
-        }
+        element.classList.toggle("hidden", !isFavorite || !matchesFilter);
       });
 
-      emptyState?.classList.toggle("hidden", visibleCount > 0);
+      emptyState?.classList.toggle("hidden", total > 0);
 
       if (count) {
-        count.textContent =
-          visibleCount === 1 ? "1 artículo" : `${visibleCount} artículos`;
+        count.textContent = total === 1 ? "1 artículo" : `${total} artículos`;
+      }
+
+      if (showFilters) {
+        renderFilters(categories, total);
+      } else {
+        filterContainers.forEach((container) => container.replaceChildren());
       }
     };
 
+    filterContainers.forEach((container) => {
+      container.addEventListener("click", (event) => {
+        const target = event.target as Element;
+        const button = target.closest<HTMLButtonElement>(
+          "[data-favorites-filter]",
+        );
+
+        if (!button) {
+          return;
+        }
+
+        activeFilter = button.dataset.favoritesFilter ?? "all";
+        render();
+      });
+    });
+
     render();
 
-    window.addEventListener("aprendo:favorites-changed", render);
+    window.addEventListener(favoritesChangedEvent, render);
 
     window.addEventListener("storage", (event) => {
-      if (event.key === STORAGE_KEY) {
+      if (event.key === favoritesStorageKey) {
         render();
       }
     });
